@@ -227,6 +227,7 @@ void __fastcall hooks::hooked_painttraverse(void* ecx, void* edx, vgui::VPANEL p
 			auto weapon = g_ctx.local()->m_hActiveWeapon().Get();
 
 			bullettracers::get().draw_beams();
+			otheresp::get().automatic_peek_indicator();
 		}
 
 		static auto framerate = 0.0f;

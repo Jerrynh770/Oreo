@@ -210,33 +210,6 @@ void draw_circe(float x, float y, float radius, int resolution, DWORD color, DWO
 
 void otheresp::automatic_peek_indicator()
 {
-	auto weapon = g_ctx.local()->m_hActiveWeapon().Get();
-
-	for (int i = 1; i <= m_entitylist()->GetHighestEntityIndex(); i++) 
-	{
-		auto e = static_cast<entity_t*>(m_entitylist()->GetClientEntity(i));
-
-		if (!e)
-			continue;
-
-		if (e->is_player())
-			continue;
-
-		if (e->IsDormant())
-			continue;
-
-		auto client_class = e->GetClientClass();
-
-		if (!client_class)
-			continue;
-
-		if (client_class->m_ClassID != CSmokeGrenadeProjectile)
-			continue;
-	}
-
-	if (!weapon)
-		return;
-
 	static auto position = ZERO;
 
 	if (!g_ctx.globals.start_position.IsZero())
@@ -247,23 +220,18 @@ void otheresp::automatic_peek_indicator()
 
 	static auto alpha = 0.0f;
 
-	if (!weapon->is_non_aim() && key_binds::get().get_key_bind_state(18) || alpha)
+	if (!g_ctx.globals.weapon->is_non_aim() && key_binds::get().get_key_bind_state(18) || alpha)
 	{
-		if (!weapon->is_non_aim() && key_binds::get().get_key_bind_state(18))
+		if (!g_ctx.globals.weapon->is_non_aim() && key_binds::get().get_key_bind_state(18))
 			alpha += 3.0f * m_globals()->m_frametime;
 		else
 			alpha -= 3.0f * m_globals()->m_frametime;
 
 		alpha = math::clamp(alpha, 0.0f, 1.0f);
-		float rad = max(2, 24 * alpha) - 1.f;
 
-		for (int i = 1; i < max(2, 24 * alpha); i++) 
-		{
-			if (rad > 2.f)
-				g_Render->DrawRing3D(position.x, position.y, position.z, round(rad), 180, Color(0, 00, 0, 0), Color(g_cfg.misc.automatic_peek_color.r(), g_cfg.misc.automatic_peek_color.g(), g_cfg.misc.automatic_peek_color.b(), int(i * alpha)), 0);
+		float radius = alpha * 16;
 
-			rad -= 1.f;
-		}
+		render::get().Draw3DFilledCircle(position, radius, Color(25, 25, 25, (int)(alpha * 255.0f)));
 	}
 }
 

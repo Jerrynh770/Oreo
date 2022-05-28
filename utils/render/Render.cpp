@@ -61,8 +61,6 @@ void ImGuiRendering::BeginScene(IDirect3DDevice9* pDevice)
 		if (g_cfg.misc.trail_types)
 			misc::get().MovementTrails();
 
-		otheresp::get().automatic_peek_indicator();
-
 		if (GrenadePrediction::get().path.size() > 2 && g_ctx.globals.weapon->is_grenade())
 			GrenadePrediction::get().Paint();
 

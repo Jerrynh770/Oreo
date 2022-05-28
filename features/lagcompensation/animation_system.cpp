@@ -1,12 +1,8 @@
-// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
-
 #include "animation_system.h"
 #include "..\misc\misc.h"
 #include "..\misc\logs.h"
 
 std::deque <adjust_data> player_records[65];
-
 
 void lagcompensation::fsn(ClientFrameStage_t stage)
 {

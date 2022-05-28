@@ -2391,7 +2391,7 @@ void c_menu::draw(bool is_open)
 			draw->AddRectFilled(ImVec2(p.x, p.y), ImVec2(p.x + 700, p.y + 750), ImColor(25, 25, 25), 6);
 			{
 				//обводка
-				draw->AddLine(ImVec2(p.x, p.y + 710), ImVec2(p.x + 750, p.y + 710), ImColor(255, 255, 255));
+				draw->AddLine(ImVec2(p.x, p.y + 710), ImVec2(p.x + 750, p.y + 710), ImColor(20, 20, 20));
 				draw->AddRect(ImVec2(p.x - 1, p.y), ImVec2(p.x + 701, p.y + 751), ImColor(33, 33, 33), 6);
 				draw->AddRect(ImVec2(p.x - 2, p.y), ImVec2(p.x + 702, p.y + 752), ImColor(40, 40, 40), 6);
 
