@@ -1,4 +1,5 @@
 #include "prediction_system.h"
+#include "../lagcompensation/animation_system.h"
 
 void engineprediction::store_netvars()
 {

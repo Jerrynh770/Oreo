@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 
 #include "aim.h"
+#include "../exploit/exploit.h"
 #include "..\misc\misc.h"
 #include "..\misc\logs.h"
 #include "..\autowall\autowall.h"
@@ -453,6 +454,15 @@ void aim::scan(adjust_data* record, scan_data& data, const Vector& shoot_positio
 				break;
 		}
 
+		if (g_cfg.ragebot.double_tap && g_cfg.ragebot.double_tap_key.key > KEY_NONE && g_cfg.ragebot.double_tap_key.key < KEY_MAX && exploit::get().double_tap_key)
+		{
+			if (!g_ctx.local()->m_bGunGameImmunity() && !(g_ctx.local()->m_fFlags() & FL_FROZEN) && !antiaim::get().freeze_check && exploit::get().double_tap_enabled && !g_ctx.globals.weapon->is_grenade() && g_ctx.globals.weapon->m_iItemDefinitionIndex() != WEAPON_TASER && g_ctx.globals.weapon->m_iItemDefinitionIndex() != WEAPON_REVOLVER && g_ctx.globals.weapon->m_iItemDefinitionIndex() != WEAPON_SSG08 && g_ctx.globals.weapon->m_iItemDefinitionIndex() != WEAPON_AWP)
+			{
+				if (best_damage * 1.939f >= record->player->m_iHealth())
+					break;
+			}
+		}
+
 		if (!optimized && (g_cfg.ragebot.weapon[g_ctx.globals.current_weapon].prefer_safe_points || force_safe_points) && data.point.safe && data.point.safe < point.safe)
 			continue;
 
@@ -762,6 +772,13 @@ void aim::fire(CUserCmd* cmd)
 		}
 	}
 
+	auto final_hitchance = 0;
+
+	if (g_ctx.globals.double_tap_aim && g_cfg.ragebot.weapon[g_ctx.globals.current_weapon].double_tap_hitchance)
+		hitchance_amount = g_cfg.ragebot.weapon[g_ctx.globals.current_weapon].double_tap_hitchance_amount;
+	else if (!g_ctx.globals.double_tap_aim && g_cfg.ragebot.weapon[g_ctx.globals.current_weapon].hitchance)
+		hitchance_amount = g_cfg.ragebot.weapon[g_ctx.globals.current_weapon].hitchance_amount;
+
 	if (!is_valid_hitchance)
 		return;
 
@@ -771,9 +788,6 @@ void aim::fire(CUserCmd* cmd)
 	if (net_channel_info)
 	{
 		auto original_tickbase = g_ctx.globals.backup_tickbase;
-
-		if (g_cfg.ragebot.double_tap && g_cfg.ragebot.double_tap_key.key)
-			original_tickbase = g_ctx.globals.backup_tickbase + g_ctx.globals.weapon->get_max_tickbase_shift();
 
 		static auto sv_maxunlag = m_cvar()->FindVar(crypt_str("sv_maxunlag"));
 
@@ -863,6 +877,22 @@ void BulidSeedTable() {
 		const auto pi_seed = math::random_float(0.f, M_PI * 2);
 
 		PreComputedSeeds.emplace_back(math::random_float(0.f, 1.f), sin(pi_seed), cos(pi_seed));
+	}
+}
+
+void aim::adaptive_two_shot()
+{
+	if (g_cfg.ragebot.double_tap)
+	{
+		for (auto i = 1; i < m_globals()->m_maxclients; i++)
+		{
+			auto e = static_cast<player_t*>(m_entitylist()->GetClientEntity(i));
+
+			if (g_ctx.globals.current_weapon == WEAPON_G3SG1 && g_ctx.globals.current_weapon == WEAPON_SCAR20)
+				g_cfg.ragebot.weapon[g_ctx.globals.current_weapon].minimum_visible_damage = e->m_iHealth() / 2 + 1;
+			else
+				g_cfg.ragebot.weapon[g_ctx.globals.current_weapon].minimum_visible_damage;
+		}
 	}
 }
 
