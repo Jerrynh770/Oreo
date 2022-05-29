@@ -286,7 +286,7 @@ void lagcompensation::update_player_animations(player_t* e)
 		}
 	}
 
-	e->m_iEFlags() &= ~0x1000;
+	e->m_iEFlags() &= ~0x1800;
 
 	if (e->m_fFlags() & FL_ONGROUND && e->m_vecVelocity().Length() > 0.0f && animlayers[6].m_flWeight <= 0.0f)
 		e->m_vecVelocity().Zero();
