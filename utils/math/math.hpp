@@ -49,7 +49,6 @@ namespace math {
 	Vector cross_product(const Vector& a, const Vector& b);
 	float dot_product(const Vector& a, const Vector& b);
 	const matrix3x4_t& world_to_screen_matrix();
-	__forceinline bool screen_transform(const Vector& in, Vector& out);
 	bool world_to_screen(const Vector& in, Vector& out);
 	void SmoothAngle(Vector& From, Vector& To, float Percent);
 	void rotate_triangle(std::array<Vector2D, 3>& points, float rotation);
@@ -76,9 +75,6 @@ namespace math {
 	float simple_spline_remap_val_clamped(float value, float a, float b, float c, float d);
 	float direction_difference(const Vector& first, const Vector& second);
 	float AngleDiff(float destAngle, float srcAngle);
-
-	void VectorAngles(const Vector& forward, Vector& angles);
-
 	void SinCos(float radians, float* sine, float* cosine);
 	void AngleVectors(const Vector& angles, Vector* forward);
 

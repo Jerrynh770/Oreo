@@ -231,7 +231,7 @@ void otheresp::automatic_peek_indicator()
 
 		float radius = alpha * 16;
 
-		render::get().Draw3DFilledCircle(position, radius, Color(25, 25, 25, (int)(alpha * 255.0f)));
+		render::get().Draw3DFilledCircle(position, radius, Color(g_cfg.misc.automatic_peek_color.r(), g_cfg.misc.automatic_peek_color.g(), g_cfg.misc.automatic_peek_color.b(), g_cfg.misc.automatic_peek_color.a()));
 	}
 }
 

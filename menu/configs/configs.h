@@ -477,6 +477,9 @@ struct Config
 		std::vector <int> removals;
 		std::vector <int> indicators;
 
+		Color removals_scope_color;
+		int removals_scope_speed;
+		int removals_scope_distance;
 		bool fix_zoom_sensivity;
 		bool grenade_prediction;
 		bool on_click;

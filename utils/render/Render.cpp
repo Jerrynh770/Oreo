@@ -41,21 +41,23 @@ void ImGuiRendering::BeginScene(IDirect3DDevice9* pDevice)
 		if (!g_ctx.local()->m_bIsScoped())
 			anim1 = 20;
 
-		if (g_cfg.esp.removals[REMOVALS_ZOOM] && g_ctx.globals.scoped && g_ctx.globals.weapon->is_sniper())
+		if (g_cfg.esp.removals[REMOVALS_SCOPE] && g_ctx.globals.scoped && g_ctx.globals.weapon->is_sniper())
 		{
 			static int w, h;
 			m_engine()->GetScreenSize(w, h);
-			g_Render->FilledRect(w / 2 - 2, h / 2, 2, 2, Color(200, 50, 80));
 
-			anim1 += m_globals()->m_frametime * 500;
+			int scope_speed = g_cfg.esp.removals_scope_speed * 100;
+			int distance = g_cfg.esp.removals_scope_distance;
+
+			anim1 += m_globals()->m_frametime * scope_speed;
 
 			if (anim1 >= 130)
 				anim1 = 130;
 
-			window->DrawList->AddRectFilledMultiColor(ImVec2(w / 2 + 20, h / 2), ImVec2(w / 2 + anim1, h / 2 + 2), ImColor(255, 255, 255, 170), ImColor(255, 255, 255, 0), ImColor(255, 255, 255, 0), ImColor(255, 255, 255, 170));
-			window->DrawList->AddRectFilledMultiColor(ImVec2(w / 2 - 20, h / 2), ImVec2(w / 2 - anim1, h / 2 + 2), ImColor(255, 255, 255, 170), ImColor(255, 255, 255, 0), ImColor(255, 255, 255, 0), ImColor(255, 255, 255, 170));
-			window->DrawList->AddRectFilledMultiColor(ImVec2(w / 2, h / 2 - 20), ImVec2(w / 2 - 2, h / 2 - anim1), ImColor(255, 255, 255, 170), ImColor(255, 255, 255, 170), ImColor(255, 255, 255, 0), ImColor(255, 255, 255, 0));
-			window->DrawList->AddRectFilledMultiColor(ImVec2(w / 2, h / 2 + 20), ImVec2(w / 2 - 2, h / 2 + anim1), ImColor(255, 255, 255, 170), ImColor(255, 255, 255, 170), ImColor(255, 255, 255, 0), ImColor(255, 255, 255, 0));
+			window->DrawList->AddRectFilledMultiColor(ImVec2(w / 2 + distance - 2, h / 2), ImVec2(w / 2 + anim1, h / 2 + 2), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()));
+			window->DrawList->AddRectFilledMultiColor(ImVec2(w / 2 - distance, h / 2), ImVec2(w / 2 - anim1, h / 2 + 2), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()));
+			window->DrawList->AddRectFilledMultiColor(ImVec2(w / 2, h / 2 - distance + 2), ImVec2(w / 2 - 2, h / 2 - anim1), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0));
+			window->DrawList->AddRectFilledMultiColor(ImVec2(w / 2, h / 2 + distance), ImVec2(w / 2 - 2, h / 2 + anim1), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0));
 		}
 
 		if (g_cfg.misc.trail_types)

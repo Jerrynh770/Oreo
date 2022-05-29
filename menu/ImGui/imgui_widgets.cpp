@@ -1806,6 +1806,20 @@ bool ImGui::Checkbox(const char* label, bool* v)
     RenderText(ImVec2(check_bb.Max.x + style.ItemInnerSpacing.x, check_bb.Min.y + style.FramePadding.y), label);
     ImGui::PopFont();
 
+    if (g_cfg.scripts.developer_mode && ImGui::IsItemHovered())
+    {
+        for (auto& item : cfg_manager->items)
+        {
+            if (v == item->pointer)
+            {
+                ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 6.0f));
+                ImGui::SetTooltip(item->name.c_str());
+                ImGui::PopStyleVar();
+                break;
+            }
+        }
+    }
+
     IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags | ImGuiItemStatusFlags_Checkable | (*v ? ImGuiItemStatusFlags_Checked : 0));
     return pressed;
 }
@@ -2218,8 +2232,6 @@ struct arrow_anim {
 
 bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboFlags flags, int* current_item)
 {
-
-
     if (std::string(label).at(0) != '#' && std::string(label).at(1) != '#') {
         ImGui::SetCursorPosX(15);
         PushStyleColor(ImGuiCol_Text, ImVec4(255 / 255.f, 255 / 255.f, 255 / 255.f, GetStyle().Alpha));
@@ -2304,6 +2316,20 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
     }
     it_open->second = ImClamp(it_open->second + (3.f * ImGui::GetIO().DeltaTime * (popup_open ? 1.f : -1.f)), 0.00f, 1.f);
 
+    if (g_cfg.scripts.developer_mode && ImGui::IsItemHovered())
+    {
+        for (auto& item : cfg_manager->items)
+        {
+            if (current_item == item->pointer)
+            {
+                ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 6.0f));
+                ImGui::SetTooltip(item->name.c_str());
+                ImGui::PopStyleVar();
+                break;
+            }
+        }
+    }
+
     if (!popup_open)
         return false;
 
@@ -2353,6 +2379,7 @@ bool ImGui::BeginCombo(const char* label, const char* preview_value, ImGuiComboF
     PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(style.FramePadding.x, style.WindowPadding.y));
     bool ret = Begin(name, NULL, window_flags);
     PopStyleVar(3);
+
     if (!ret)
     {
         EndPopup();
@@ -3532,6 +3559,20 @@ bool ImGui::SliderScalar(const char* label, ImGuiDataType data_type, void* p_dat
         }
     }
 
+    if (g_cfg.scripts.developer_mode && ImGui::IsItemHovered())
+    {
+        for (auto& item : cfg_manager->items)
+        {
+            if (p_data == item->pointer)
+            {
+                ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 6.0f));
+                ImGui::SetTooltip(item->name.c_str());
+                ImGui::PopStyleVar();
+                break;
+            }
+        }
+    }
+
     if (temp_input_is_active)
     {
         const bool is_clamp_input = (flags & ImGuiSliderFlags_AlwaysClamp) != 0;
@@ -3613,8 +3654,10 @@ bool ImGui::SliderScalar(const char* label, ImGuiDataType data_type, void* p_dat
     if (label_size.x > 0.0f)
         window->DrawList->AddText(ImVec2(window->DC.CursorPos.x + 8, window->DC.CursorPos.y - 32), ImColor(255 / 255.f, 255 / 255.f, 255 / 255.f, 1 * GetStyle().Alpha), label);
     Spacing();
+
     IMGUI_TEST_ENGINE_ITEM_INFO(id, label, window->DC.ItemFlags);
     ImGui::PopFont();
+
     return value_changed;
 }
 

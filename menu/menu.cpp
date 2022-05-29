@@ -388,7 +388,7 @@ void remove_config()
 
 void Open_configs()
 {
-	std::string folder = crypt_str("C:\\Oreo\\");
+	std::string folder = crypt_str("C:\\Oreo\\Configs");
 	ShellExecute(NULL, crypt_str("open"), folder.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 
@@ -479,8 +479,69 @@ bool LabelClick2(const char* label, bool* v, const char* unique_id)
 
 }
 
-bool draw_lua_editor()
+void lua_edit(std::string window_name)
 {
+	std::string file_path = crypt_str("C:\\Oreo\\Scripts\\");
+	file_path += window_name + crypt_str(".lua");
+
+	const char* child_name = (window_name + window_name).c_str();
+
+//	ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_Once);
+	ImGui::Begin(window_name.c_str(), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+//	ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 5.f);
+
+	static TextEditor editor;
+
+	if (!loaded_editing_script)
+	{
+		static auto lang = TextEditor::LanguageDefinition::Lua();
+
+		editor.SetLanguageDefinition(lang);
+		editor.SetReadOnly(false);
+
+		std::ifstream t(file_path);
+
+		if (t.good())
+		{
+			std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+			editor.SetText(str);
+		}
+
+		loaded_editing_script = true;
+	}
+
+//	ImGui::SetWindowFontScale(1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f));
+
+	ImGui::SetWindowSize(ImVec2(ImFloor(800 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))), ImFloor(700 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f)))));
+	editor.Render(child_name, ImGui::GetWindowSize() - ImVec2(0, 66 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))));
+
+	ImGui::Separator();
+
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetWindowSize().x - (16.f * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))) - (250.f * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))));
+	ImGui::BeginGroup();
+
+	if (ImGui::Button(crypt_str("Save"), ImVec2(70, 20)))
+	{
+		std::ofstream out;
+
+		out.open(file_path);
+		out << editor.GetText() << std::endl;
+		out.close();
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button(crypt_str("Close"), ImVec2(70, 20)))
+	{
+		g_ctx.globals.focused_on_input = false;
+		loaded_editing_script = false;
+		editing_script.clear();
+	}
+
+	ImGui::EndGroup();
+
+//	ImGui::PopStyleVar();
+	ImGui::End();
 }
 
 bool draw_lua_button(const char* label, const char* label_id, bool load, bool save, int curr_config, bool create = false)
@@ -490,6 +551,7 @@ bool draw_lua_button(const char* label, const char* label_id, bool load, bool sa
 	if (ImGui::PlusButton(label, 0, ImVec2(240, 26), label_id, ImColor(25, 25, 25, 225), (25, 25, 25, 225)))
 		selected_script = curr_config;
 
+	static std::string edit2;
 	static char config_name[36] = "\0";
 	ImGui::PushStyleVar(ImGuiStyleVar_::ImGuiStyleVar_PopupBorderSize, 0);
 	ImGui::PushStyleVar(ImGuiStyleVar_::ImGuiStyleVar_PopupRounding, 4);
@@ -500,7 +562,8 @@ bool draw_lua_button(const char* label, const char* label_id, bool load, bool sa
 		ImGui::SetNextItemWidth(min(g_ctx.gui.pop_anim, 0.01f) * ImGui::GetFrameHeight() * 1.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, g_ctx.gui.pop_anim);
 		auto clicked = false;
-		bool one, ones, oness, two, open = false;
+		
+		bool one, ones, oness, two, open, edit = false;
 		if (!create)
 		{
 			if (LabelClick2(crypt_str("Load"), &one, label_id))
@@ -517,11 +580,19 @@ bool draw_lua_button(const char* label, const char* label_id, bool load, bool sa
 
 			if (LabelClick2(crypt_str("Open lua folder"), &open, label_id))
 				Open_lua();
+
+//			if (LabelClick2(crypt_str("Edit"), &edit, label_id))
+//				edit2 = label;
 		}
 		ImGui::EndPopup();
 	}
 	ImGui::PopStyleVar(2);
 	ImGui::PopStyleColor(1);
+
+	if (!edit2.empty()) {
+		lua_edit(edit2.c_str());
+	}
+
 	return pressed;
 }
 
@@ -785,6 +856,20 @@ void draw_keybind(const char* label, key_bind* key_bind, const char* unique_id)
 		break;
 	}
 
+	if (g_cfg.scripts.developer_mode && ImGui::IsItemHovered())
+	{
+		for (auto& item : cfg_manager->items)
+		{
+			if (key_bind == item->pointer)
+			{
+				ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 6.0f));
+				ImGui::SetTooltip(item->name.c_str());
+				ImGui::PopStyleVar();
+				break;
+			}
+		}
+	}
+
 	if (ImGui::BeginPopup(unique_id))
 	{
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 6 * c_menu::get().dpi_scale);
@@ -883,70 +968,6 @@ __forceinline void tab_end()
 {
 	ImGui::PopStyleVar();
 	ImGui::SetWindowFontScale(c_menu::get().dpi_scale);
-}
-void lua_edit(std::string window_name)
-{
-	std::string file_path = crypt_str("C:\\Oreo\\Scripts\\");
-	file_path += window_name + crypt_str(".lua");
-
-	const char* child_name = (window_name + window_name).c_str();
-
-	ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_Once);
-	ImGui::Begin(window_name.c_str(), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-	ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 5.f);
-
-	static TextEditor editor;
-
-	if (!loaded_editing_script)
-	{
-		static auto lang = TextEditor::LanguageDefinition::Lua();
-
-		editor.SetLanguageDefinition(lang);
-		editor.SetReadOnly(false);
-
-		std::ifstream t(file_path);
-
-		if (t.good())
-		{
-			std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-			editor.SetText(str);
-		}
-
-		loaded_editing_script = true;
-	}
-
-	ImGui::SetWindowFontScale(1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f));
-
-	ImGui::SetWindowSize(ImVec2(ImFloor(800 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))), ImFloor(700 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f)))));
-	editor.Render(child_name, ImGui::GetWindowSize() - ImVec2(0, 66 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))));
-
-	ImGui::Separator();
-
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetWindowSize().x - (16.f * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))) - (250.f * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))));
-	ImGui::BeginGroup();
-
-	if (ImGui::CustomButton(crypt_str("Save"), (crypt_str("Save") + window_name).c_str(), ImVec2(125 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f)), 0), true, c_menu::get().ico_bottom, crypt_str("S")))
-	{
-		std::ofstream out;
-
-		out.open(file_path);
-		out << editor.GetText() << std::endl;
-		out.close();
-	}
-
-	ImGui::SameLine();
-
-	if (ImGui::CustomButton(crypt_str("Close"), (crypt_str("Close") + window_name).c_str(), ImVec2(125 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f)), 0)))
-	{
-		g_ctx.globals.focused_on_input = false;
-		loaded_editing_script = false;
-		editing_script.clear();
-	}
-
-	ImGui::EndGroup();
-
-	ImGui::PopStyleVar();
-	ImGui::End();
 }
 
 void c_menu::rage()
@@ -1550,6 +1571,15 @@ void c_menu::visuals()
 		{
 			draw_multicombo(crypt_str("Removals"), g_cfg.esp.removals, removals, ARRAYSIZE(removals), preview);
 
+			if (g_cfg.esp.removals[REMOVALS_SCOPE])
+			{
+				ImGui::Text("  Scope color");
+				ImGui::SameLine();
+				ImGui::ColorEdit(crypt_str("##removals_scope_color"), &g_cfg.esp.removals_scope_color, ALPHA);
+				ImGui::SliderInt(crypt_str("Scope speed"), &g_cfg.esp.removals_scope_speed, 1, 10);
+				ImGui::SliderInt(crypt_str("Scope distance"), &g_cfg.esp.removals_scope_distance, 1, 20);
+			}
+
 			if (g_cfg.esp.removals[REMOVALS_ZOOM])
 				ImGui::Checkbox(crypt_str("Fix zoom sensivity"), &g_cfg.esp.fix_zoom_sensivity);
 
@@ -1935,6 +1965,18 @@ void c_menu::main()
 		ImGui::EndChild();
 
 	}
+
+	if (Main == 2)
+	{
+		ImGui::SetCursorPos(ImVec2(25, 130));
+		ImGui::MenuChild("Developer mode", ImVec2(334, 570));
+		{
+			ImGui::Checkbox(crypt_str("Developer mode"), &g_cfg.scripts.developer_mode);
+			ImGui::Checkbox(crypt_str("Allow HTTP requests"), &g_cfg.scripts.allow_http);
+			ImGui::Checkbox(crypt_str("Allow files read or write"), &g_cfg.scripts.allow_file);
+		}
+		ImGui::EndChild();
+	}
 }
 
 void c_menu::skins()
@@ -2284,6 +2326,9 @@ void c_menu::sub_tabs()
 
 		ImGui::SetCursorPos(ImVec2{ 554 , 45 });
 		if (ImGui::tab("      Lua", " ", Main == 1)) Main = 1;
+
+		ImGui::SetCursorPos(ImVec2{ 204 , 45 });
+		if (ImGui::tab("  Debug", "  ", Main == 2)) Main = 2;
 	}
 
 	if (tab == 4)

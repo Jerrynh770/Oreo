@@ -216,6 +216,9 @@ void C_ConfigManager::setup()
 	}
 
 	setup_item(&g_cfg.esp.removals, 8, crypt_str("Esp.world_removals"));
+	setup_item(&g_cfg.esp.removals_scope_color, Color(255, 255, 255, 255), crypt_str("Esp.removals_scope_color"));
+	setup_item(&g_cfg.esp.removals_scope_speed, 10, crypt_str("Esp.removals_scope_speed"));
+	setup_item(&g_cfg.esp.removals_scope_distance, 10, crypt_str("Esp.removals_scope_distance"));
 	setup_item(&g_cfg.esp.fix_zoom_sensivity, false, crypt_str("Esp.fix_zoom_sensivity"));
 	setup_item(&g_cfg.esp.indicators, 9, crypt_str("Esp.rage_indicators"));
 	setup_item(&g_cfg.misc.thirdperson_toggle, key_bind(TOGGLE), crypt_str("Misc.thirdperson_toggle"));
@@ -377,6 +380,9 @@ void C_ConfigManager::setup()
 	setup_item(&g_cfg.menu.oldwindowsize_y_saved, 0.f, crypt_str("Menu.oldwindowsize_x_saved"));
 	setup_item(&g_cfg.menu.speed, 0.f, crypt_str("Menu.speed"));
 	setup_item(&g_cfg.scripts.scripts, crypt_str("Scripts.loaded"));
+	setup_item(&g_cfg.scripts.developer_mode, false, crypt_str("Menu.developer_mode"));
+	setup_item(&g_cfg.scripts.allow_http, false, crypt_str("Menu.allow_http"));
+	setup_item(&g_cfg.scripts.allow_file, false, crypt_str("Menu.allow_file"));
 }
 
 void C_ConfigManager::add_item(void* pointer, const char* name, const std::string& type) {

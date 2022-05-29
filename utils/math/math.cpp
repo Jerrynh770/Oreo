@@ -484,35 +484,6 @@ namespace math
 		}
 	}
 	//--------------------------------------------------------------------------------
-	void VectorAngles(const Vector& forward, Vector& angles)
-	{
-		float tmp, yaw, pitch;
-
-		if (forward[1] == 0 && forward[0] == 0)
-		{
-			yaw = 0;
-			if (forward[2] > 0)
-				pitch = 270;
-			else
-				pitch = 90;
-		}
-		else
-		{
-			yaw = (atan2(forward[1], forward[0]) * 180 / M_PI);
-			if (yaw < 0)
-				yaw += 360;
-
-			tmp = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
-			pitch = (atan2(-forward[2], tmp) * 180 / M_PI);
-			if (pitch < 0)
-				pitch += 360;
-		}
-
-		angles[0] = pitch;
-		angles[1] = yaw;
-		angles[2] = 0;
-	}
-	//--------------------------------------------------------------------------------
 	void VectorMAInline(const float* start, float scale, const float* direction, float* dest)
 	{
 		dest[0] = start[0] + direction[0] * scale;
@@ -561,42 +532,13 @@ namespace math
 		return *reinterpret_cast<matrix3x4_t*>(view_matrix);
 	}
 
-	bool screen_transform(const Vector& in, Vector& out)
-	{
-		const auto& w2_s_matrix = world_to_screen_matrix();
-		out.x = w2_s_matrix[0][0] * in[0] + w2_s_matrix[0][1] * in[1] + w2_s_matrix[0][2] * in[2] + w2_s_matrix[0][3];
-		out.y = w2_s_matrix[1][0] * in[0] + w2_s_matrix[1][1] * in[1] + w2_s_matrix[1][2] * in[2] + w2_s_matrix[1][3];
-		out.z = 0.0f;
-
-		const auto w = w2_s_matrix[3][0] * in.x + w2_s_matrix[3][1] * in.y + w2_s_matrix[3][2] * in.z + w2_s_matrix[3][3];
-
-		if (w < 0.001f)
-		{
-			out.x *= 100000;
-			out.y *= 100000;
-			return false;
-		}
-
-		const auto invw = 1.0f / w;
-		out.x *= invw;
-		out.y *= invw;
-
-		return true;
-	}
-
+	//--------------------------------------------------------------------------------
+	
 	bool world_to_screen(const Vector& in, Vector& out)
 	{
-		const auto result = screen_transform(in, out);
-
-
-		int w, h;
-		m_engine()->GetScreenSize(w, h);
-
-		out.x = (w / 2.0f) + (out.x * w) / 2.0f;
-		out.y = (h / 2.0f) - (out.y * h) / 2.0f;
-
-		return result;
+		return !m_debugoverlay()->ScreenPosition(in, out);
 	}
+
 	//--------------------------------------------------------------------------------
 	void SmoothAngle(Vector& From, Vector& To, float Percent)
 	{
