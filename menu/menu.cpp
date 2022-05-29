@@ -31,6 +31,7 @@ int BStyleTab;
 int Skins;
 
 IDirect3DTexture9* all_skins[36];
+IDirect3DTexture9* all_agents[10];
 
 std::string get_wep(int id, int custom_index = -1, bool knife = true)
 {
@@ -144,7 +145,6 @@ IDirect3DTexture9* get_skin_preview(const char* weapon_name, const std::string& 
 			vpk_path = crypt_str("resource/flash/econ/weapons/base_weapons/ct_gloves.png");
 		else if (!strcmp(weapon_name, crypt_str("unknown")))
 			vpk_path = crypt_str("resource/flash/econ/weapons/base_weapons/weapon_snowball.png");
-
 	}
 	const auto handle = m_basefilesys()->Open(vpk_path.c_str(), crypt_str("r"), crypt_str("GAME"));
 	if (handle)
@@ -477,6 +477,10 @@ bool LabelClick2(const char* label, bool* v, const char* unique_id)
 
 	return pressed;
 
+}
+
+bool draw_lua_editor()
+{
 }
 
 bool draw_lua_button(const char* label, const char* label_id, bool load, bool save, int curr_config, bool create = false)
@@ -998,7 +1002,7 @@ void c_menu::rage()
 		ImGui::MenuChild("Help", ImVec2(334, 115));
 		{
 			ImGui::Checkbox(crypt_str("Defensive doubletap"), &g_cfg.ragebot.defensive_doubletap);
-			ImGui::Checkbox(crypt_str("Anti-defensive"), &g_cfg.ragebot.anti_defensive);
+			ImGui::Checkbox(crypt_str("Anti-defensive (test)"), &g_cfg.ragebot.anti_defensive);
 			ImGui::Checkbox(crypt_str("Adaptive two shot damage"), &g_cfg.ragebot.weapon[hooks::rage_weapon].adaptive_two_shot);
 		}
 		ImGui::EndChild();
@@ -2391,7 +2395,7 @@ void c_menu::draw(bool is_open)
 			draw->AddRectFilled(ImVec2(p.x, p.y), ImVec2(p.x + 700, p.y + 750), ImColor(25, 25, 25), 6);
 			{
 				//обводка
-				draw->AddLine(ImVec2(p.x, p.y + 710), ImVec2(p.x + 750, p.y + 710), ImColor(20, 20, 20));
+				draw->AddLine(ImVec2(p.x, p.y + 710), ImVec2(p.x + 750, p.y + 710), ImColor(255, 255, 255));
 				draw->AddRect(ImVec2(p.x - 1, p.y), ImVec2(p.x + 701, p.y + 751), ImColor(33, 33, 33), 6);
 				draw->AddRect(ImVec2(p.x - 2, p.y), ImVec2(p.x + 702, p.y + 752), ImColor(40, 40, 40), 6);
 
