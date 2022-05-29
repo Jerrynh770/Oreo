@@ -171,7 +171,7 @@ int weapon_t::get_weapon_group(bool rage)
 
 	if (rage)
 	{
-		if (m_iItemDefinitionIndex() == WEAPON_REVOLVER || m_iItemDefinitionIndex() == WEAPON_DEAGLE)
+		if (m_iItemDefinitionIndex() == WEAPON_REVOLVER || m_iItemDefinitionIndex() == WEAPON_DEAGLE || is_pistol())
 			return 0;
 		else if (is_pistol())
 			return 1;
@@ -190,7 +190,7 @@ int weapon_t::get_weapon_group(bool rage)
 	}
 	else
 	{
-		if (m_iItemDefinitionIndex() == WEAPON_DEAGLE)
+		if (m_iItemDefinitionIndex() == WEAPON_DEAGLE || is_pistol() || m_iItemDefinitionIndex() == WEAPON_REVOLVER)
 			return 0;
 		if (is_pistol())
 			return 1;

@@ -150,6 +150,7 @@ void key_binds::update_key_binds()
 	update_key_bind(&g_cfg.misc.fakeduck_key, 20);
 	update_key_bind(&g_cfg.misc.slowwalk_key, 21);
 	update_key_bind(&g_cfg.ragebot.body_aim_key, 22);
+	update_key_bind(&g_cfg.ragebot.desync_roll_resolver, 23);
 }
 
 bool key_binds::get_key_bind_state(int key_bind_id)

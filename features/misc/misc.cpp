@@ -291,6 +291,24 @@ void misc::keybinds()
 		modes++;
 	}
 
+	if (key_binds::get().get_key_bind_state(23))
+	{
+		spect += crypt_str("Resolver roll");
+		spect += crypt_str("\n");
+		specs++;
+
+		switch (g_cfg.ragebot.desync_roll_resolver.mode) {
+		case 0: {
+			mode += crypt_str("[holding]  ");
+		}break;
+		case 1: {
+			mode += crypt_str("[toggled]  ");
+		}break;
+		}
+		mode += crypt_str("\n");
+		modes++;
+	}
+
 	ImVec2 p;
 	ImVec2 size_menu;
 
