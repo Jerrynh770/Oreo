@@ -1743,8 +1743,8 @@ void c_menu::main()
 				if (current.size() > 2)
 					current.erase(current.size() - 3, 3);
 
-			ImGui::SetCursorPos(ImVec2(10, 15));
-			ImGui::BeginChild("##configs", ImVec2(300, 460), false, ImGuiWindowFlags_NoBackground);
+			ImGui::SetCursorPos(ImVec2(40, 15));
+			ImGui::BeginChild("##configs", ImVec2(300, 570), false, ImGuiWindowFlags_NoBackground);
 			{
 				ImGui::PushFont(c_menu::get().g_pMenuFont);
 				draw_config_button("Add new config", "add", false, false, false, true);
@@ -1841,8 +1841,8 @@ void c_menu::main()
 				}
 			}
 
-			ImGui::SetCursorPos(ImVec2(10, 15));
-			ImGui::BeginChild("##Lua", ImVec2(300, 460), false, ImGuiWindowFlags_NoBackground);
+			ImGui::SetCursorPos(ImVec2(40, 15));
+			ImGui::BeginChild("##Lua", ImVec2(300, 570), false, ImGuiWindowFlags_NoBackground);
 			{
 				ImGui::PushFont(c_menu::get().g_pMenuFont);
 				for (int i = 0; i < scripts.size(); i++)
