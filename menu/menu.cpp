@@ -5,6 +5,8 @@
 #include "../constchars.h"
 #include "../features/misc/logs.h"
 
+
+
 #define ALPHA (ImGuiColorEditFlags_AlphaPreview | ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_AlphaBar| ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_Float)
 #define NOALPHA (ImGuiColorEditFlags_NoTooltip | ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_NoAlpha | ImGuiColorEditFlags_InputRGB | ImGuiColorEditFlags_Float)
 
@@ -31,7 +33,6 @@ int BStyleTab;
 int Skins;
 
 IDirect3DTexture9* all_skins[36];
-IDirect3DTexture9* all_agents[10];
 
 std::string get_wep(int id, int custom_index = -1, bool knife = true)
 {
@@ -486,9 +487,9 @@ void lua_edit(std::string window_name)
 
 	const char* child_name = (window_name + window_name).c_str();
 
-//	ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_Once);
 	ImGui::Begin(window_name.c_str(), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-//	ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 5.f);
+	ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 5.f);
 
 	static TextEditor editor;
 
@@ -510,9 +511,9 @@ void lua_edit(std::string window_name)
 		loaded_editing_script = true;
 	}
 
-//	ImGui::SetWindowFontScale(1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f));
+	ImGui::SetWindowFontScale(1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f));
 
-	ImGui::SetWindowSize(ImVec2(ImFloor(800 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))), ImFloor(700 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f)))));
+//	ImGui::SetWindowSize(ImVec2(ImFloor(800 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))), ImFloor(700 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f)))));
 	editor.Render(child_name, ImGui::GetWindowSize() - ImVec2(0, 66 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))));
 
 	ImGui::Separator();
@@ -540,7 +541,7 @@ void lua_edit(std::string window_name)
 
 	ImGui::EndGroup();
 
-//	ImGui::PopStyleVar();
+	ImGui::PopStyleVar();
 	ImGui::End();
 }
 
@@ -608,7 +609,6 @@ bool draw_config_button(const char* label, const char* label_id, bool load, bool
 	ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(33 / 255.f, 33 / 255.f, 33 / 255.f, g_ctx.gui.pop_anim * 0.85f));
 	if (ImGui::BeginPopup(label_id, ImGuiWindowFlags_NoMove))
 	{
-
 		ImGui::SetNextItemWidth(min(g_ctx.gui.pop_anim, 0.01f) * ImGui::GetFrameHeight() * 1.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, g_ctx.gui.pop_anim);
 		auto clicked = false;
@@ -1468,22 +1468,6 @@ void c_menu::visuals()
 			ImGui::SameLine();
 			ImGui::ColorEdit(crypt_str("##skyboxcolor"), &g_cfg.esp.skybox_color, NOALPHA);
 
-			if (g_cfg.esp.skybox == 21)
-			{
-				static char sky_custom[64] = "\0";
-
-				if (!g_cfg.esp.custom_skybox.empty())
-					strcpy_s(sky_custom, sizeof(sky_custom), g_cfg.esp.custom_skybox.c_str());
-
-				ImGui::Text(crypt_str("Name"));
-				ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1.f);
-
-				if (ImGui::InputText(crypt_str("##customsky"), sky_custom, sizeof(sky_custom)))
-					g_cfg.esp.custom_skybox = sky_custom;
-
-				ImGui::PopStyleVar();
-			}
-
 			ImGui::Checkbox(crypt_str("Color modulation"), &g_cfg.esp.nightmode);
 
 			if (g_cfg.esp.nightmode)
@@ -1578,6 +1562,7 @@ void c_menu::visuals()
 				ImGui::ColorEdit(crypt_str("##removals_scope_color"), &g_cfg.esp.removals_scope_color, ALPHA);
 				ImGui::SliderInt(crypt_str("Scope speed"), &g_cfg.esp.removals_scope_speed, 1, 10);
 				ImGui::SliderInt(crypt_str("Scope distance"), &g_cfg.esp.removals_scope_distance, 1, 20);
+				ImGui::SliderInt(crypt_str("Scope length"), &g_cfg.esp.removals_scope_length, 1, 20);
 			}
 
 			if (g_cfg.esp.removals[REMOVALS_ZOOM])
@@ -2283,7 +2268,6 @@ void c_menu::skins()
 	}
 }
 
-
 void c_menu::sub_tabs()
 {
 	if (tab == 0)
@@ -2424,9 +2408,7 @@ void c_menu::draw(bool is_open)
 	auto& time = g_ctx.globals.time;
 
 	{
-#ifdef _DEBUG
-		ImGui::ShowDemoWindow();
-#endif
+//		ImGui::ShowDemoWindow();
 		ImGui::SetNextWindowSize(ImVec2(gs));
 		if (ImGui::Begin(("##"), nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar))
 		{

@@ -63,41 +63,32 @@ class resolver
 {
 	player_t* player = nullptr;
 	adjust_data* player_record = nullptr;
-	bool low_delta();
-	bool low_delta2();
+
 	bool side = false;
-	float GetForwardYaw(player_t* ent);
-	float GetBackwardYaw(player_t* ent);
+	bool fake = false;
 	bool was_first_bruteforce = false;
 	bool was_second_bruteforce = false;
-
-	bool was_first_low_bruteforce = false;
-	bool was_second_low_bruteforce = false;
 
 	float lock_side = 0.0f;
 	float original_goal_feet_yaw = 0.0f;
 	float original_pitch = 0.0f;
+	float resolve_way = 0.0f;
+	float last_anims_update_time;
+	int FreestandSide[64];
+	int resolveSide;
 public:
+	float resolveValue;
 	void initialize(player_t* e, adjust_data* record, const float& goal_feet_yaw, const float& pitch);
 	void reset();
-	bool IsAdjustingBalance();
-	bool is_slow_walking();
-	bool is_breaking_lby(AnimationLayer cur_layer, AnimationLayer prev_layer);
-	void setmode();
+	bool Side();
 	bool DesyncDetect();
-	bool update_walk_data();
-	void resolve_yaw();
+	void shitresolver();
 	float resolve_pitch();
-
-	AnimationLayer resolver_layers[3][13];
-	AnimationLayer previous_layers[13];
-
-	float gfy_default = 0.0f;
-	float positive_side = 0.0f;
-	float negative_side = 0.0f;
+	void resolve_yaw();
 
 	resolver_side last_side = RESOLVER_ORIGINAL;
 };
+
 
 enum resolver_type
 {
@@ -378,6 +369,7 @@ class lagcompensation : public singleton <lagcompensation>
 public:
 	std::vector<player_settings> player_sets;
 	void extrapolate(player_t* player, Vector& origin, Vector& velocity, int& flags, bool wasonground);
+	void update_client_animations(player_t* m_pBaseEntity);
 	void upd_nw(player_t* m_pPlayer);
 	void fsn(ClientFrameStage_t stage);
 	bool valid(int i, player_t* e);

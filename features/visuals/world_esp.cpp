@@ -81,9 +81,6 @@ void worldesp::skybox_changer()
 	case 20: skybox_name = "vertigo"; break;
 	case 21: skybox_name = "vertigoblue_hdr"; break;
 	case 22: skybox_name = "vietnam"; break;
-	case 23:
-		skybox_name = g_cfg.esp.custom_skybox;
-		break;
 	}
 
 	static auto skybox_number = 0;

@@ -254,7 +254,6 @@ void ImGui::Text(const char* fmt, ...)
     TextV(fmt, args);
     va_end(args);
     ImGui::PopFont();
-
 }
 
 void ImGui::TextV(const char* fmt, va_list args)
@@ -262,7 +261,6 @@ void ImGui::TextV(const char* fmt, va_list args)
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems)
         return;
-
 
     ImGuiContext& g = *GImGui;
     const char* text_end = g.TempBuffer + ImFormatStringV(g.TempBuffer, IM_ARRAYSIZE(g.TempBuffer), fmt, args);
@@ -3543,7 +3541,7 @@ bool ImGui::SliderScalar(const char* label, ImGuiDataType data_type, void* p_dat
     bool temp_input_is_active = temp_input_allowed && TempInputIsActive(id);
     if (!temp_input_is_active)
     {
-        const bool focus_requested = temp_input_allowed && FocusableItemRegister(window, id);
+        const bool focus_requested = FocusableItemRegister(window, id);
         const bool clicked = (hovered && g.IO.MouseClicked[0]);
         if (focus_requested || clicked || g.NavActivateId == id || g.NavInputId == id)
         {
@@ -3551,11 +3549,6 @@ bool ImGui::SliderScalar(const char* label, ImGuiDataType data_type, void* p_dat
             SetFocusID(id, window);
             FocusWindow(window);
             g.ActiveIdUsingNavDirMask |= (1 << ImGuiDir_Left) | (1 << ImGuiDir_Right);
-            if (temp_input_allowed && (focus_requested || (clicked && g.IO.KeyCtrl) || g.NavInputId == id))
-            {
-                temp_input_is_active = true;
-                FocusableItemUnregister(window);
-            }
         }
     }
 
@@ -3607,41 +3600,10 @@ bool ImGui::SliderScalar(const char* label, ImGuiDataType data_type, void* p_dat
     const bool value_changed = SliderBehavior(frame_bb, id, data_type, p_data, p_min, p_max, format, power, ImGuiSliderFlags_None, &grab_bb);
     if (value_changed)
         MarkItemEdited(id);
-    struct values
-    {
-        float new_val = 0.f;
-        float old_val = 0.f;
-    };
-    static std::map<ImGuiID, values> act_anim;
-
-    auto it_act = act_anim.find(id);
-    if (it_act == act_anim.end())
-    {
-        act_anim.insert({ id,{ 0.f, frame_bb.Min.x} });
-        it_act = act_anim.find(id);
-    }
-
-    it_act->second.new_val = grab_bb.Max.x - 1;
-    if (it_hover->second > 0.001f || IsWindowHovered()) {
-        if (it_act->second.new_val >= it_act->second.old_val)
-        {
-            it_act->second.old_val += (350.f * ImGui::GetIO().DeltaTime);
-        }
-
-        if (it_act->second.new_val <= it_act->second.old_val)
-        {
-            it_act->second.old_val -= (350.f * ImGui::GetIO().DeltaTime);
-        }
-    }
-    else
-    {
-        it_act->second.old_val = it_act->second.new_val;
-    }
 
     if (grab_bb.Max.x > grab_bb.Min.x) {
-        window->DrawList->AddRectFilled(ImVec2(frame_bb.Min.x, frame_bb.Min.y + 9), ImVec2(ImMax((it_act->second.old_val * ImMin(1.f, GetStyle().Alpha)), frame_bb.Min.x - 4), grab_bb.Max.y - 9), ImColor(100 / 255.f, 125 / 255.f, 200 / 255.f, 0.9f * GetStyle().Alpha), 4);
-        window->DrawList->AddCircleFilled(ImVec2(ImMax((it_act->second.old_val - 4) * ImMin(1.f, GetStyle().Alpha), frame_bb.Min.x - 4), grab_bb.Min.y + 11), 4 + 2 * it_hover->second, ImColor(255 / 255.f, 255 / 255.f, 255 / 255.f, 1 * GetStyle().Alpha), 36);
-        window->DrawList->AddCircle(ImVec2(ImMax((it_act->second.old_val - 4) * ImMin(1.f, GetStyle().Alpha), frame_bb.Min.x - 4), grab_bb.Min.y + 11), 4 + 2 * it_hover->second, ImColor(200 / 255.f, 200 / 255.f, 200 / 255.f, 1 * GetStyle().Alpha), 36);
+        window->DrawList->AddRectFilled(ImVec2(frame_bb.Min.x, frame_bb.Min.y + 9), ImVec2(grab_bb.Max.x - 2, grab_bb.Max.y - 9), ImColor(100 / 255.f, 125 / 255.f, 200 / 255.f, 0.9f * GetStyle().Alpha), 4);
+        window->DrawList->AddRectFilled(ImVec2(grab_bb.Min.x - 2, grab_bb.Min.y + 6), ImVec2(grab_bb.Max.x, grab_bb.Max.y - 8), ImColor(100 / 255.f, 125 / 255.f, 200 / 255.f, 0.9f * GetStyle().Alpha), 3);
     }
 
     char value_buf[64];

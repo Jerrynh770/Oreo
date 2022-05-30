@@ -32,16 +32,16 @@ void engineprediction::restore_netvars()
     auto m_velocity_modifier = g_ctx.local()->m_flVelocityModifier() - data->m_velocity_modifier;
     const auto velocity_diff = data->m_velocity - g_ctx.local()->m_vecVelocity();
 
-    if (fabs(aim_punch_angle_delta.x) > 0.03425f && fabs(aim_punch_angle_delta.y) > 0.03425f && fabs(aim_punch_angle_delta.z) > 0.03425f)
+    if (fabs(aim_punch_angle_delta.x) > 0.03125f && fabs(aim_punch_angle_delta.y) > 0.03125f && fabs(aim_punch_angle_delta.z) > 0.03125f)
         g_ctx.local()->m_aimPunchAngle() = data->m_aimPunchAngle;
 
-    if (fabs(aim_punch_angle_vel_delta.x) > 0.03425f && fabs(aim_punch_angle_vel_delta.y) > 0.03425f && fabs(aim_punch_angle_vel_delta.z) > 0.03425f)
+    if (fabs(aim_punch_angle_vel_delta.x) > 0.03125f && fabs(aim_punch_angle_vel_delta.y) > 0.03125f && fabs(aim_punch_angle_vel_delta.z) > 0.03125f)
         g_ctx.local()->m_aimPunchAngleVel() = data->m_aimPunchAngleVel;
 
-    if (fabs(view_punch_angle_delta.x) > 0.03425f && fabs(view_punch_angle_delta.y) > 0.03425f && fabs(view_punch_angle_delta.z) > 0.03425f)
+    if (fabs(view_punch_angle_delta.x) > 0.03125f && fabs(view_punch_angle_delta.y) > 0.03125f && fabs(view_punch_angle_delta.z) > 0.03125f)
         g_ctx.local()->m_viewPunchAngle() = data->m_viewPunchAngle;
 
-    if (fabs(view_offset_delta.x) > 0.03425f && fabs(view_offset_delta.y) > 0.03425f && fabs(view_offset_delta.z) > 0.03425f)
+    if (fabs(view_offset_delta.x) > 0.03125f && fabs(view_offset_delta.y) > 0.03125f && fabs(view_offset_delta.z) > 0.03125f)
         g_ctx.local()->m_vecViewOffset() = data->m_vecViewOffset;
 
     if (std::abs(velocity_diff.x) <= 0.03125f && std::abs(velocity_diff.y) <= 0.03125f && std::abs(velocity_diff.z) <= 0.03125f)
@@ -56,7 +56,7 @@ void engineprediction::restore_netvars()
     if (std::abs(g_ctx.local()->EntIndex() - data->index) <= 0.00625f)
         g_ctx.local()->EntIndex() != data->index;
 
-    if (fabs(duck_amount) > 0.03425f)
+    if (fabs(duck_amount) > 0.03125f)
     {
         g_ctx.local()->m_flDuckAmount() = data->m_duckAmount;
         g_ctx.local()->m_flDuckSpeed() = data->m_duckSpeed;

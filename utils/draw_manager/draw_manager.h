@@ -45,7 +45,7 @@ struct CUSTOMVERTEX2 {
 class render : public singleton< render > {
 private:
 	float alpha_factor = 1.0f;
-	LPDIRECT3DDEVICE9 device; //-V122
+	LPDIRECT3DDEVICE9 device;
 	D3DVIEWPORT9      m_viewport;
 public:
 	bool initalized = false;

@@ -534,9 +534,40 @@ namespace math
 
 	//--------------------------------------------------------------------------------
 	
+	bool screen_transform(const Vector& in, Vector& out)
+	{
+		const auto& w2_s_matrix = world_to_screen_matrix();
+		out.x = w2_s_matrix[0][0] * in[0] + w2_s_matrix[0][1] * in[1] + w2_s_matrix[0][2] * in[2] + w2_s_matrix[0][3];
+		out.y = w2_s_matrix[1][0] * in[0] + w2_s_matrix[1][1] * in[1] + w2_s_matrix[1][2] * in[2] + w2_s_matrix[1][3];
+		out.z = 0.0f;
+
+		const auto w = w2_s_matrix[3][0] * in.x + w2_s_matrix[3][1] * in.y + w2_s_matrix[3][2] * in.z + w2_s_matrix[3][3];
+
+		if (w < 0.001f)
+		{
+			out.x *= 100000;
+			out.y *= 100000;
+			return false;
+		}
+
+		const auto invw = 1.0f / w;
+		out.x *= invw;
+		out.y *= invw;
+
+		return true;
+	}
+
 	bool world_to_screen(const Vector& in, Vector& out)
 	{
-		return !m_debugoverlay()->ScreenPosition(in, out);
+		const auto result = screen_transform(in, out);
+
+		int w, h;
+		m_engine()->GetScreenSize(w, h);
+
+		out.x = (w / 2.0f) + (out.x * w) / 2.0f;
+		out.y = (h / 2.0f) - (out.y * h) / 2.0f;
+
+		return result;
 	}
 
 	//--------------------------------------------------------------------------------

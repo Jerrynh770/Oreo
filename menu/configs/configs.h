@@ -480,6 +480,7 @@ struct Config
 		Color removals_scope_color;
 		int removals_scope_speed;
 		int removals_scope_distance;
+		int removals_scope_length;
 		bool fix_zoom_sensivity;
 		bool grenade_prediction;
 		bool on_click;

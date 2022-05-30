@@ -48,11 +48,12 @@ void ImGuiRendering::BeginScene(IDirect3DDevice9* pDevice)
 
 			int scope_speed = g_cfg.esp.removals_scope_speed * 100;
 			int distance = g_cfg.esp.removals_scope_distance;
+			int length = g_cfg.esp.removals_scope_length * 10;
 
 			anim1 += m_globals()->m_frametime * scope_speed;
 
-			if (anim1 >= 130)
-				anim1 = 130;
+			if (anim1 >= length)
+				anim1 = length;
 
 			window->DrawList->AddRectFilledMultiColor(ImVec2(w / 2 + distance - 2, h / 2), ImVec2(w / 2 + anim1, h / 2 + 2), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()));
 			window->DrawList->AddRectFilledMultiColor(ImVec2(w / 2 - distance, h / 2), ImVec2(w / 2 - anim1, h / 2 + 2), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), 0), ImColor(g_cfg.esp.removals_scope_color.r(), g_cfg.esp.removals_scope_color.g(), g_cfg.esp.removals_scope_color.b(), g_cfg.esp.removals_scope_color.a()));

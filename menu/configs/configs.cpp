@@ -219,6 +219,7 @@ void C_ConfigManager::setup()
 	setup_item(&g_cfg.esp.removals_scope_color, Color(255, 255, 255, 255), crypt_str("Esp.removals_scope_color"));
 	setup_item(&g_cfg.esp.removals_scope_speed, 10, crypt_str("Esp.removals_scope_speed"));
 	setup_item(&g_cfg.esp.removals_scope_distance, 10, crypt_str("Esp.removals_scope_distance"));
+	setup_item(&g_cfg.esp.removals_scope_length, 10, crypt_str("Esp.removals_scope_length"));
 	setup_item(&g_cfg.esp.fix_zoom_sensivity, false, crypt_str("Esp.fix_zoom_sensivity"));
 	setup_item(&g_cfg.esp.indicators, 9, crypt_str("Esp.rage_indicators"));
 	setup_item(&g_cfg.misc.thirdperson_toggle, key_bind(TOGGLE), crypt_str("Misc.thirdperson_toggle"));
