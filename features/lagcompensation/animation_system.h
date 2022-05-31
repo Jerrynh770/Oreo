@@ -89,7 +89,6 @@ public:
 	resolver_side last_side = RESOLVER_ORIGINAL;
 };
 
-
 enum resolver_type
 {
 	ORIGINAL,
@@ -353,17 +352,11 @@ extern std::deque <adjust_data> player_records[65];
 struct player_settings
 {
 	__int64 id;
-	resolver_history res_type;
 	bool low_stand;
 	bool low_move;
 	bool faking;
 	int neg;
 	int pos;
-
-	player_settings(__int64 id, resolver_history res_type, bool low_stand, bool low_move, bool faking, int left, int right) noexcept : id(id), res_type(res_type), low_stand(low_stand), low_move(low_move), faking(faking), neg(neg), pos(pos)
-	{
-
-	}
 };
 class lagcompensation : public singleton <lagcompensation>
 {

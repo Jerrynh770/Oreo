@@ -98,15 +98,15 @@ bool resolver::Side()
 
     if (speed > 1.1f)
     {
-        if (!layers[12].m_flWeight * 1000.f)
+        if (!layers[12].m_flWeight * 1800.f)
         {
-            if ((layers[6].m_flWeight * 1000.f) == (layers[6].m_flWeight * 1000.f))
+            if ((layers[6].m_flWeight * 1800.f) == (layers[6].m_flWeight * 1800.f))
             {
                 float EyeYaw = fabs(layers[6].m_flPlaybackRate - moveLayers[0][6].m_flPlaybackRate);
                 float Negative = fabs(layers[6].m_flPlaybackRate - moveLayers[1][6].m_flPlaybackRate);
                 float Positive = fabs(layers[6].m_flPlaybackRate - moveLayers[2][6].m_flPlaybackRate);
 
-                if (Positive >= EyeYaw || Positive >= Negative || (Positive * 1000.f))
+                if (Positive >= EyeYaw || Positive >= Negative || (Positive * 1800.f))
                 {
                     last_anims_update_time = m_globals()->m_realtime;
                     return true;
@@ -267,6 +267,22 @@ void resolver::resolve_yaw()
         return;
     }
 
+    if (!DesyncDetect())
+    {
+        player_record->side = RESOLVER_ORIGINAL;
+        player_record->curMode = NO_MODE;
+        player_record->curSide = NO_SIDE;
+        return;
+    }
+
+    if (player_record->curMode == AIR)
+    {
+        player_record->side = RESOLVER_ORIGINAL;
+        player_record->curMode = AIR;
+        player_record->curSide = NO_SIDE;
+        return;
+    }
+
     auto animstate = player->get_animation_state();
     float resolveValue;
     int resolveSide = resolver::Side() ? 1 : -1;
@@ -320,13 +336,57 @@ void resolver::resolve_yaw()
         }
     }
 
+    static int side[63];
+    auto speed = g_ctx.local()->m_vecVelocity().Length2D();
+    int m_Side;
+    if (speed <= 0.1f)
+    {
+        if (player_record->layers[3].m_flWeight == 0.0 && player_record->layers[3].m_flCycle == 0.0)
+        {
+            side[player->EntIndex()] = 2 * (math::normalize_diff(player->m_angEyeAngles().y, player_record->abs_angles.y) <= 0.0) - 1;
+        }
+    }
+    else
+    {
+        const float f_delta = abs(player_record->layers[6].m_flPlaybackRate - player_record->left_layers[6].m_flPlaybackRate);
+        const float s_delta = abs(player_record->layers[6].m_flPlaybackRate - player_record->center_layers[6].m_flPlaybackRate);
+        const float t_delta = abs(player_record->layers[6].m_flPlaybackRate - player_record->right_layers[6].m_flPlaybackRate);
+
+        if (f_delta < s_delta || t_delta <= s_delta || (s_delta * 1000.0))
+        {
+            if (f_delta >= t_delta && s_delta > t_delta && !(t_delta * 1000.0))
+            {
+                side[player->EntIndex()] = 1;
+            }
+        }
+        else
+        {
+            side[player->EntIndex()] = -1;
+        }
+    }
+
     if (resolveValue > player->get_max_desync_delta())
         resolveValue = player->get_max_desync_delta();
 
     player->get_animation_state()->m_flGoalFeetYaw = math::normalize_yaw(player->m_angEyeAngles().y + resolveValue * resolveSide);
+
+    float flRawYawIdeal = (math::angle_diff(-player->m_vecAbsVelocity().y, -player->m_vecAbsVelocity().x) * 180 / M_PI);
+    if (flRawYawIdeal < 0)
+        flRawYawIdeal += 360;
 }
 
 float resolver::resolve_pitch()
 {
-    return original_pitch;
+    float liohsdafg = 0.f;
+    if (liohsdafg < -179.f)
+        liohsdafg += 360.f;
+    else if (liohsdafg > 90.0 || liohsdafg < -90.0) liohsdafg = 89.f;
+    else if (liohsdafg > 89.0 && liohsdafg < 91.0) liohsdafg -= 90.f;
+    else if (liohsdafg > 179.0 && liohsdafg < 181.0) liohsdafg -= 180;
+    else if (liohsdafg > -179.0 && liohsdafg < -181.0) liohsdafg += 180;
+
+    else if (fabs(liohsdafg) == 0) liohsdafg = copysign(89.0f, liohsdafg);
+    else liohsdafg = original_pitch;
+
+    return liohsdafg;
 }

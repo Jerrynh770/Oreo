@@ -399,7 +399,7 @@ void lagcompensation::update_player_animations(player_t* e)
 	{
 		e->invalidate_physics_recursive(8);
 
-		AnimationLayer backup_layers[13];
+		AnimationLayer backup_layers[15];
 		memcpy(backup_layers, e->get_animlayers(), e->animlayer_count() * sizeof(AnimationLayer));
 
 		memcpy(e->get_animlayers(), layers, e->animlayer_count() * sizeof(AnimationLayer));
@@ -468,10 +468,10 @@ void lagcompensation::update_player_animations(player_t* e)
 		switch (record->side)
 		{
 		case RESOLVER_ORIGINAL:
-			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y + 58.0f);
+			animstate->m_flGoalFeetYaw = previous_goal_feet_yaw[e->EntIndex()];
 			break;
 		case RESOLVER_ZERO:
-			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y - 32.0f);
+			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y);
 			break;
 		case RESOLVER_FIRST:
 			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y + e->get_max_desync_delta());
@@ -480,16 +480,16 @@ void lagcompensation::update_player_animations(player_t* e)
 			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y - e->get_max_desync_delta());
 			break;
 		case RESOLVER_LOW_FIRST:
-			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y + 78.0f);
+			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y + 35.f);
 			break;
 		case RESOLVER_LOW_SECOND:
 			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y - 35.f);
 			break;
 		case RESOLVER_LOW_FIRST1:
-			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y - 78.0f);
+			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y + 20.f);
 			break;
 		case RESOLVER_LOW_SECOND1:
-			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y - 16.0f);
+			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y - 20.f);
 			break;
 		}
 	}

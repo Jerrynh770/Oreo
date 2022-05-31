@@ -34,6 +34,7 @@ public:
 	int hitbox;
 	bool center;
 	float safe;
+	float semi_safe;
 
 	scan_point()
 	{
@@ -41,6 +42,7 @@ public:
 		hitbox = -1;
 		center = false;
 		safe = 0.0f;
+		semi_safe = 0.0f;
 	}
 
 	scan_point(const Vector& point, const int& hitbox, const bool& center) //-V818 //-V730
@@ -56,6 +58,7 @@ public:
 		hitbox = -1;
 		center = false;
 		safe = 0.0f;
+		semi_safe = 0.0f;
 	}
 };
 
@@ -161,25 +164,29 @@ class aim : public singleton <aim>
 	void prepare_targets();
 	adjust_data* get_record(std::deque <adjust_data>* records, bool history);
 	int get_minimum_damage(bool visible, int health);
+	void adaptive_two_shot();
 	void scan_targets();
 	bool automatic_stop(CUserCmd* cmd);
 	void find_best_target();
 	void fire(CUserCmd* cmd);
-	void adaptive_two_shot();
-	bool hitchance(Vector angles, player_t* ent, float chance);
+
+	void build_seed_table();
+	bool calculate_hitchance(const Vector& aim_angle, int& final_hitchance);
 
 	std::vector <scanned_target> scanned_targets;
 	scanned_target final_target;
-	float final_hitchance;
 public:
 	void run(CUserCmd* cmd);
-	void scan(adjust_data* record, scan_data& data, const Vector& shoot_position = g_ctx.globals.eye_pos, bool optimized = false);
-	std::vector <int> get_hitboxes(adjust_data* record, bool optimized = false);
+	void scan(adjust_data* record, scan_data& data, const Vector& shoot_position = g_ctx.globals.eye_pos, bool optimized = true);
+	std::vector <int> get_hitboxes(adjust_data* record);
 	std::vector <scan_point> get_points(adjust_data* record, int hitbox, bool from_aim = true);
 	bool hitbox_intersection(player_t* e, matrix3x4_t* matrix, int hitbox, const Vector& start, const Vector& end, float* safe = nullptr);
 
 	std::vector <target> targets;
 	std::vector <adjust_data> backup;
+
+	std::vector <int> hitboxes; //-V827
+	std::vector <scan_point> points; //-V827
 
 	int last_target_index = -1;
 	Last_target last_target[65];
