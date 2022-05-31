@@ -487,8 +487,8 @@ void lua_edit(std::string window_name)
 
 	const char* child_name = (window_name + window_name).c_str();
 
-	ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_Once);
-	ImGui::Begin(window_name.c_str(), nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+	ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_FirstUseEver);
+	ImGui::Begin(window_name.c_str(), nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
 	ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 5.f);
 
 	static TextEditor editor;
@@ -513,7 +513,7 @@ void lua_edit(std::string window_name)
 
 	ImGui::SetWindowFontScale(1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f));
 
-//	ImGui::SetWindowSize(ImVec2(ImFloor(800 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))), ImFloor(700 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f)))));
+	ImGui::SetWindowSize(ImVec2(ImFloor(800 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))), ImFloor(700 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f)))));
 	editor.Render(child_name, ImGui::GetWindowSize() - ImVec2(0, 66 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))));
 
 	ImGui::Separator();
@@ -590,9 +590,9 @@ bool draw_lua_button(const char* label, const char* label_id, bool load, bool sa
 	ImGui::PopStyleVar(2);
 	ImGui::PopStyleColor(1);
 
-	if (!edit2.empty()) {
-		lua_edit(edit2.c_str());
-	}
+//	if (!edit2.empty()) {
+//		lua_edit(edit2.c_str());
+//	}
 
 	return pressed;
 }
@@ -1384,12 +1384,12 @@ void c_menu::visuals()
 
 						if (category == 0 || ENEMY)
 						{
-							ImGui::Checkbox(crypt_str("Aimbot hitboxes"), &g_cfg.player.lag_hitbox);
+							ImGui::Checkbox(crypt_str("On shot chams"), &g_cfg.player.on_shot_chams);
 							ImGui::SameLine();
-							ImGui::ColorEdit(crypt_str("##lagcompcolor"), &g_cfg.player.lag_hitbox_color, ALPHA);
+							ImGui::ColorEdit(crypt_str("##lagcompcolor"), &g_cfg.player.on_shot_chams_color, ALPHA);
 
-							if (g_cfg.player.lag_hitbox)
-								draw_combo(("Aimbot hitboxes type"), g_cfg.player.lag_hitbox_type, lag_type, ARRAYSIZE(lag_type));
+							if (g_cfg.player.on_shot_chams)
+								draw_combo(("Aimbot hitboxes type"), g_cfg.player.on_shot_chams_type, on_shot_chams_type, ARRAYSIZE(on_shot_chams_type));
 						}
 					}
 				}
@@ -1723,10 +1723,10 @@ void c_menu::misc()
 			draw_keybind(crypt_str("Auto peek"), &g_cfg.misc.automatic_peek, crypt_str("##AUTOPEEK__HOTKEY"));
 			ImGui::SameLine();
 			ImGui::ColorEdit(crypt_str("##automatic_peek_color"), &g_cfg.misc.automatic_peek_color, ALPHA);
+			ImGui::SliderInt(crypt_str("Auto peek speed"), &g_cfg.misc.automatic_peek_speed, 1, 10);
 			ImGui::Checkbox(crypt_str("Fake-Duck"), &g_cfg.misc.noduck);
 			if (g_cfg.misc.noduck)
 				draw_keybind(crypt_str("Fake-duck"), &g_cfg.misc.fakeduck_key, crypt_str("##FAKEDUCK__HOTKEY"));
-			ImGui::SetCursorPosX(8); ImGui::Text("Slow-walk");
 			draw_keybind(crypt_str("Slow-walk"), &g_cfg.misc.slowwalk_key, crypt_str("##SLOWWALK__HOTKEY"));
 		}
 		ImGui::EndChild();

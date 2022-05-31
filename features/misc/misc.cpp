@@ -6,7 +6,7 @@
 #include "..\visuals\hitchams.h"
 #include "prediction_system.h"
 #include "logs.h"
-#include "../../../menu/menu.h"
+#include "../../menu/menu.h"
 #include "../../utils/Render/Render.h"
 #include "..\ragebot\antiaim.h"
 
@@ -1001,7 +1001,7 @@ void misc::aimbot_hitboxes()
 	if (!g_cfg.player.enable)
 		return;
 
-	if (!g_cfg.player.lag_hitbox)
+	if (!g_cfg.player.on_shot_chams)
 		return;
 
 	auto player = (player_t*)m_entitylist()->GetClientEntity(aim::get().last_target_index);

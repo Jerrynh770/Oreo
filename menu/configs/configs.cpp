@@ -150,9 +150,9 @@ void C_ConfigManager::setup()
 	setup_item(&g_cfg.player.arrows, false, crypt_str("Player.arrows"));
 	setup_item(&g_cfg.player.distance, 1, crypt_str("Player.arrows_distance"));
 	setup_item(&g_cfg.player.size, 1, crypt_str("Player.arrows_size"));
-	setup_item(&g_cfg.player.lag_hitbox, false, crypt_str("Player.lag_hitbox"));
-	setup_item(&g_cfg.player.lag_hitbox_color, Color(255, 255, 255), crypt_str("Player.lag_hitbox_color"));
-	setup_item(&g_cfg.player.lag_hitbox_type, false, crypt_str("Player.lag_hitbox_type"));
+	setup_item(&g_cfg.player.on_shot_chams_type, false, crypt_str("Player.on_shot_chams"));
+	setup_item(&g_cfg.player.on_shot_chams_color, Color(255, 255, 255), crypt_str("Player.on_shot_chams_color"));
+	setup_item(&g_cfg.player.on_shot_chams_type, false, crypt_str("Player.on_shot_chams_type"));
 	setup_item(&g_cfg.player.player_models, 0, crypt_str("Esp.player_models"));
 	setup_item(&g_cfg.player.local_chams_type, 0, crypt_str("Player.local_chams_type"));
 	setup_item(&g_cfg.player.fake_chams_enable, false, crypt_str("Player.fake_chams_enable"));
@@ -327,6 +327,7 @@ void C_ConfigManager::setup()
 
 	setup_item(&g_cfg.misc.automatic_peek, key_bind(HOLD), crypt_str("Misc.automatic_peek"));
 	setup_item(&g_cfg.misc.automatic_peek_color, Color(255, 255, 255), crypt_str("Misc.automatic_peek_color"));
+	setup_item(&g_cfg.misc.automatic_peek_speed, 1, crypt_str("Misc.automatic_peek_speed"));
 
 	setup_item(&g_cfg.misc.holo_panel, false, crypt_str("Misc.holo_panel"));
 	setup_item(&g_cfg.misc.indicators, false, crypt_str("Misc.indicators_panel"));

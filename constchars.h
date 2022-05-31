@@ -223,7 +223,7 @@ const char* chamstype[] =
 	"Velvet"
 };
 
-const char* lag_type[] =
+const char* on_shot_chams_type[] =
 {
 	"Regular",
 	"Metallic",

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "..\..\includes.hpp"
-#include "..\..\..\sdk\math\VMatrix.hpp"
+#include "..\..\sdk\math\VMatrix.hpp"
 #include "m128.h"
 
 #include <DirectXMath.h>

@@ -405,9 +405,9 @@ struct Config
 		Color arrows_color;
 		int distance;
 		int size;
-		bool lag_hitbox;
-		Color lag_hitbox_color;
-		int lag_hitbox_type;
+		bool on_shot_chams;
+		Color on_shot_chams_color;
+		int on_shot_chams_type;
 		int player_models;
 		int local_chams_type;
 		bool fake_chams_enable;
@@ -607,6 +607,7 @@ struct Config
 		float retrack_speed;
 		key_bind automatic_peek;
 		Color automatic_peek_color;
+		int automatic_peek_speed;
 		bool lightingonshot;
 
 		key_bind edge_jump;

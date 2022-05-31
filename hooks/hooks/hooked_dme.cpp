@@ -1282,14 +1282,14 @@ void hit_chams::draw_hit_matrix()
 	)#"))
 		};
 
-		auto material = materials[g_cfg.player.lag_hitbox_type];
+		auto material = materials[g_cfg.player.on_shot_chams_type];
 
-		auto alpha_c = (float)g_cfg.player.lag_hitbox_color.a() / 255.0f;
+		auto alpha_c = (float)g_cfg.player.on_shot_chams_color.a() / 255.0f;
 		float normal_color[3] =
 		{
-			g_cfg.player.lag_hitbox_color[0] / 255.0f,
-			g_cfg.player.lag_hitbox_color[1] / 255.0f,
-			g_cfg.player.lag_hitbox_color[2] / 255.0f
+			g_cfg.player.on_shot_chams_color[0] / 255.0f,
+			g_cfg.player.on_shot_chams_color[1] / 255.0f,
+			g_cfg.player.on_shot_chams_color[2] / 255.0f
 		};
 
 		m_renderview()->SetBlend(alpha_c * alpha);
@@ -1308,9 +1308,9 @@ void hit_chams::draw_hit_matrix()
 
 		float xqz_color[3] =
 		{
-			g_cfg.player.lag_hitbox_color[0] / 255.0f,
-			g_cfg.player.lag_hitbox_color[1] / 255.0f,
-			g_cfg.player.lag_hitbox_color[2] / 255.0f
+			g_cfg.player.on_shot_chams_color[0] / 255.0f,
+			g_cfg.player.on_shot_chams_color[1] / 255.0f,
+			g_cfg.player.on_shot_chams_color[2] / 255.0f
 		};
 
 		m_renderview()->SetBlend(asd_alpha * alpha_c);

@@ -15,6 +15,7 @@ void engineprediction::store_netvars()
     data->m_duckAmount = g_ctx.local()->m_flDuckAmount();
     data->index = g_ctx.local()->EntIndex();
     data->m_duckSpeed = g_ctx.local()->m_flDuckSpeed();
+
 }
 
 void engineprediction::restore_netvars()
@@ -32,16 +33,16 @@ void engineprediction::restore_netvars()
     auto m_velocity_modifier = g_ctx.local()->m_flVelocityModifier() - data->m_velocity_modifier;
     const auto velocity_diff = data->m_velocity - g_ctx.local()->m_vecVelocity();
 
-    if (fabs(aim_punch_angle_delta.x) > 0.03125f && fabs(aim_punch_angle_delta.y) > 0.03125f && fabs(aim_punch_angle_delta.z) > 0.03125f)
+    if (fabs(aim_punch_angle_delta.x) > 0.03425f && fabs(aim_punch_angle_delta.y) > 0.03425f && fabs(aim_punch_angle_delta.z) > 0.03425f)
         g_ctx.local()->m_aimPunchAngle() = data->m_aimPunchAngle;
 
-    if (fabs(aim_punch_angle_vel_delta.x) > 0.03125f && fabs(aim_punch_angle_vel_delta.y) > 0.03125f && fabs(aim_punch_angle_vel_delta.z) > 0.03125f)
+    if (fabs(aim_punch_angle_vel_delta.x) > 0.03425f && fabs(aim_punch_angle_vel_delta.y) > 0.03425f && fabs(aim_punch_angle_vel_delta.z) > 0.03425f)
         g_ctx.local()->m_aimPunchAngleVel() = data->m_aimPunchAngleVel;
 
-    if (fabs(view_punch_angle_delta.x) > 0.03125f && fabs(view_punch_angle_delta.y) > 0.03125f && fabs(view_punch_angle_delta.z) > 0.03125f)
+    if (fabs(view_punch_angle_delta.x) > 0.03425f && fabs(view_punch_angle_delta.y) > 0.03425f && fabs(view_punch_angle_delta.z) > 0.03425f)
         g_ctx.local()->m_viewPunchAngle() = data->m_viewPunchAngle;
 
-    if (fabs(view_offset_delta.x) > 0.03125f && fabs(view_offset_delta.y) > 0.03125f && fabs(view_offset_delta.z) > 0.03125f)
+    if (fabs(view_offset_delta.x) > 0.03425f && fabs(view_offset_delta.y) > 0.03425f && fabs(view_offset_delta.z) > 0.03425f)
         g_ctx.local()->m_vecViewOffset() = data->m_vecViewOffset;
 
     if (std::abs(velocity_diff.x) <= 0.03125f && std::abs(velocity_diff.y) <= 0.03125f && std::abs(velocity_diff.z) <= 0.03125f)
@@ -56,7 +57,7 @@ void engineprediction::restore_netvars()
     if (std::abs(g_ctx.local()->EntIndex() - data->index) <= 0.00625f)
         g_ctx.local()->EntIndex() != data->index;
 
-    if (fabs(duck_amount) > 0.03125f)
+    if (fabs(duck_amount) > 0.03425f)
     {
         g_ctx.local()->m_flDuckAmount() = data->m_duckAmount;
         g_ctx.local()->m_flDuckSpeed() = data->m_duckSpeed;
@@ -83,16 +84,6 @@ void engineprediction::setup()
     prediction_data.prediction_stage = PREDICT;
 }
 
-float engineprediction::GetSpread()
-{
-    return m_flSpread;
-}
-
-float engineprediction::GetInaccuracy()
-{
-    return m_flInaccuracy;
-}
-
 void engineprediction::predict(CUserCmd* m_pcmd)
 {
     if (prediction_data.prediction_stage != PREDICT)
@@ -103,6 +94,8 @@ void engineprediction::predict(CUserCmd* m_pcmd)
     if (m_clientstate()->iDeltaTick > 0)
         m_prediction()->Update(m_clientstate()->iDeltaTick, true, m_clientstate()->nLastCommandAck, m_clientstate()->nLastOutgoingCommand + m_clientstate()->iChokedCommands);
 
+
+
     if (!prediction_data.prediction_random_seed)
         prediction_data.prediction_random_seed = *reinterpret_cast <int**> (util::FindSignature(crypt_str("client.dll"), crypt_str("A3 ? ? ? ? 66 0F 6E 86")) + 0x1);
 
@@ -110,12 +103,12 @@ void engineprediction::predict(CUserCmd* m_pcmd)
 
     if (!prediction_data.prediction_player)
         prediction_data.prediction_player = *reinterpret_cast <int**> (util::FindSignature(crypt_str("client.dll"), crypt_str("89 35 ? ? ? ? F3 0F 10 48")) + 0x2);
-
     if (!prediction_data.prediction_player)
+
         *prediction_data.prediction_player = reinterpret_cast <int> (g_ctx.local());
 
     m_movehelper()->set_host(g_ctx.local());
-    m_gamemovement()->StartTrackPredictionErrors(g_ctx.local());
+    m_gamemovement()->StartTrackPredictionErrors(g_ctx.local()); //-V807
 
     static auto m_nImpulse = util::find_in_datamap(g_ctx.local()->GetPredDescMap(), crypt_str("m_nImpulse"));
     static auto m_nButtons = util::find_in_datamap(g_ctx.local()->GetPredDescMap(), crypt_str("m_nButtons"));
@@ -143,6 +136,7 @@ void engineprediction::predict(CUserCmd* m_pcmd)
     move_data.m_vecAngles = m_pcmd->m_viewangles;
     move_data.m_nImpulseCommand = m_pcmd->m_impulse;
     memset(&move_data, 0, sizeof(CMoveData));
+
     m_prediction()->SetupMove(g_ctx.local(), m_pcmd, m_movehelper(), &move_data);
     m_gamemovement()->ProcessMovement(g_ctx.local(), &move_data);
     m_prediction()->FinishMove(g_ctx.local(), m_pcmd, &move_data);
@@ -152,15 +146,16 @@ void engineprediction::predict(CUserCmd* m_pcmd)
 
 
     const auto weapon = g_ctx.local()->m_hActiveWeapon().Get();
-    m_flSpread = FLT_MAX;
-    m_flInaccuracy = FLT_MAX;
-
-    if (weapon) {
-        weapon->update_accuracy_penality();
-
-        m_flSpread = weapon->get_spread_virtual();
-        m_flInaccuracy = weapon->get_inaccuracy_virtual();
+    if (!weapon) {
+        weapon->get_spread();
+        weapon->get_inaccuracy();
     }
+    else {
+        weapon->get_spread();
+        weapon->get_inaccuracy();
+    }
+
+    weapon->update_accuracy_penality();
 
     auto viewmodel = g_ctx.local()->m_hViewModel().Get();
 

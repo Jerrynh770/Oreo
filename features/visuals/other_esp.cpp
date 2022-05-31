@@ -219,17 +219,18 @@ void otheresp::automatic_peek_indicator()
 		return;
 
 	static auto alpha = 0.0f;
+	int speed = g_cfg.misc.automatic_peek_speed;
 
 	if (!g_ctx.globals.weapon->is_non_aim() && key_binds::get().get_key_bind_state(18) || alpha)
 	{
 		if (!g_ctx.globals.weapon->is_non_aim() && key_binds::get().get_key_bind_state(18))
-			alpha += 3.0f * m_globals()->m_frametime * 3;
+			alpha += 3.0f * m_globals()->m_frametime * speed;
 		else
-			alpha -= 3.0f * m_globals()->m_frametime * 3;
+			alpha -= 3.0f * m_globals()->m_frametime * speed;
 
 		alpha = math::clamp(alpha, 0.0f, 1.0f);
 
-		float radius = alpha * 15;
+		float radius = alpha * 16;
 
 		render::get().Draw3DFilledCircle(position, radius, Color(g_cfg.misc.automatic_peek_color.r(), g_cfg.misc.automatic_peek_color.g(), g_cfg.misc.automatic_peek_color.b(), g_cfg.misc.automatic_peek_color.a()));
 	}

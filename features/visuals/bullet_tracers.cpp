@@ -1,7 +1,7 @@
 #include "bullet_tracers.h"
 #include "..\..\sdk\misc\BeamInfo_t.hpp"
 #include "..\ragebot\aim.h"
-#include "..\..\..\utils\ctx\ctx.hpp"
+#include "../../utils/ctx/ctx.hpp"
 #include "..\misc\logs.h"
 
 void bullettracers::events(IGameEvent* event)

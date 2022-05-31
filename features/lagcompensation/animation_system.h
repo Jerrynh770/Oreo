@@ -131,6 +131,7 @@ public:
 	modes curMode;
 	get_side_move curSide;
 
+
 	bool invalid;
 	bool immune;
 	bool dormant;
