@@ -2444,6 +2444,19 @@ bool ImGui::Combo(const char* label, int* current_item, bool (*items_getter)(voi
         return false;
     }
 
+    if (g_cfg.scripts.developer_mode && ImGui::IsItemHovered())
+    {
+        for (auto& item : cfg_manager->items)
+        {
+            if (label == item->pointer)
+            {
+                ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 6.0f));
+                ImGui::SetTooltip(item->name.c_str());
+                ImGui::PopStyleVar();
+                break;
+            }
+        }
+    }
 
     // Display items
     // FIXME-OPT: Use clipper (but we need to disable it on the appearing frame to make sure our call to SetItemDefaultFocus() is processed)
@@ -2481,6 +2494,21 @@ bool ImGui::Combo(const char* label, int* current_item, bool (*items_getter)(voi
 bool ImGui::Combo(const char* label, int* current_item, const char* const items[], int items_count, int height_in_items)
 {
     const bool value_changed = Combo(label, current_item, Items_ArrayGetter, (void*)items, items_count, height_in_items);
+
+    if (g_cfg.scripts.developer_mode && ImGui::IsItemHovered())
+    {
+        for (auto& item : cfg_manager->items)
+        {
+            if (label == item->pointer)
+            {
+                ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 6.0f));
+                ImGui::SetTooltip(item->name.c_str());
+                ImGui::PopStyleVar();
+                break;
+            }
+        }
+    }
+
     return value_changed;
 }
 
@@ -2495,6 +2523,21 @@ bool ImGui::Combo(const char* label, int* current_item, const char* items_separa
         items_count++;
     }
     bool value_changed = Combo(label, current_item, Items_SingleStringGetter, (void*)items_separated_by_zeros, items_count, height_in_items);
+
+    if (g_cfg.scripts.developer_mode && ImGui::IsItemHovered())
+    {
+        for (auto& item : cfg_manager->items)
+        {
+            if (label == item->pointer)
+            {
+                ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.0f, 6.0f));
+                ImGui::SetTooltip(item->name.c_str());
+                ImGui::PopStyleVar();
+                break;
+            }
+        }
+    }
+
     return value_changed;
 }
 

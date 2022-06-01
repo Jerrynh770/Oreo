@@ -154,6 +154,7 @@ bool lagcompensation::valid(int i, player_t* e)
 			player_resolver[i].reset();
 
 			g_ctx.globals.fired_shots[i] = 0;
+			g_ctx.globals.missed_shots[i] = 0;
 		}
 		else if (e->IsDormant())
 			is_dormant[i] = true;
@@ -177,16 +178,18 @@ void lagcompensation::update_player_animations(player_t* e)
 	if (!m_engine()->GetPlayerInfo(e->EntIndex(), &player_info))
 		return;
 
-	auto records = &player_records[e->EntIndex()]; //-V826
+	auto records = &player_records[e->EntIndex()];
+	adjust_data* previous_record = nullptr;
 
 	if (records->empty())
 		return;
 
-	adjust_data* previous_record = nullptr;
+	if (records->size() >= 2)
+		previous_record = &records->at(1);
 
 	auto record = &records->front();
 
-	AnimationLayer animlayers[13];
+	AnimationLayer animlayers[15];
 	float pose_parametrs[24];
 
 	memcpy(pose_parametrs, &e->m_flPoseParameter(), 24 * sizeof(float));
@@ -342,7 +345,22 @@ void lagcompensation::update_player_animations(player_t* e)
 			{
 				auto simulated_time = previous_record->simulation_time + TICKS_TO_TIME(i);
 
-				if (duck_amount_per_tick) //-V550
+				auto lby_delta = fabs(math::normalize_yaw(e->m_flLowerBodyYawTarget() - previous_record->lby));
+
+				if (lby_delta > 0.0f && e->m_vecVelocity().Length() < 5.0f)
+				{
+					auto delta = ticks_chocked - i;
+					auto use_new_lby = true;
+
+					if (lby_delta < 1.0f)
+						use_new_lby = !delta;
+					else
+						use_new_lby = delta < 2;
+
+					e->m_flLowerBodyYawTarget() = use_new_lby ? backup_lower_body_yaw_target : previous_record->lby;
+				}
+
+				if (duck_amount_per_tick)
 					e->m_flDuckAmount() = previous_record->duck_amount + duck_amount_per_tick * (float)i;
 
 				on_ground = e->m_fFlags() & FL_ONGROUND;
@@ -468,10 +486,10 @@ void lagcompensation::update_player_animations(player_t* e)
 		switch (record->side)
 		{
 		case RESOLVER_ORIGINAL:
-			animstate->m_flGoalFeetYaw = previous_goal_feet_yaw[e->EntIndex()];
+			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y + 58.0f);
 			break;
 		case RESOLVER_ZERO:
-			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y);
+			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y - 32.0f);
 			break;
 		case RESOLVER_FIRST:
 			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y + e->get_max_desync_delta());
@@ -480,10 +498,10 @@ void lagcompensation::update_player_animations(player_t* e)
 			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y - e->get_max_desync_delta());
 			break;
 		case RESOLVER_LOW_FIRST:
-			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y + 35.f);
+			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y + 78.0f);
 			break;
 		case RESOLVER_LOW_SECOND:
-			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y - 35.f);
+			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y - 78.0f);
 			break;
 		case RESOLVER_LOW_FIRST1:
 			animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y + 20.f);
@@ -531,13 +549,13 @@ bool lagcompensation::is_unsafe_tick(player_t* player)
 	auto record = &records->front();
 
 	auto ticks = TIME_TO_TICKS(player->m_flSimulationTime() - player->m_flOldSimulationTime());
-	if (ticks < 1 && !previous_record) return false; //no previous record, ticks is below 1, we can safely proceed. so let's cache this entity.
+	if (ticks < 1 && !previous_record) return false;
 
 	if (previous_record)
 	{
 		int old_tick = TIME_TO_TICKS(record->simulation_time - previous_record->simulation_time);
 		if (ticks < 1 && old_tick < ticks)
-			return false; //both records are 0/1 or 0/0
+			return false;
 
 		if (ticks < 1 && old_tick > 2)
 		{

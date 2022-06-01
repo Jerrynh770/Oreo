@@ -284,7 +284,7 @@ void Refresh_scripts()
 		else if (current.size() >= 4)
 			current.erase(current.size() - 4, 4);
 	}
-	eventlogs::get().add(crypt_str("Refresh") + scripts.at(selected_script) + crypt_str(" script"), false);
+	eventlogs::get().add(crypt_str("Refresh scripts"), false);
 }
 
 void Reload_scripts()
@@ -311,19 +311,6 @@ void Unload_script()
 {
 	c_lua::get().unload_script(selected_script);
 	c_lua::get().refresh_scripts();
-
-	scripts = c_lua::get().scripts;
-
-	if (selected_script >= scripts.size())
-		selected_script = scripts.size() - 1;
-
-	for (auto& current : scripts)
-	{
-		if (current.size() >= 5 && current.at(current.size() - 1) == 'c')
-			current.erase(current.size() - 5, 5);
-		else if (current.size() >= 4)
-			current.erase(current.size() - 4, 4);
-	}
 
 	eventlogs::get().add(crypt_str("Unloaded ") + scripts.at(selected_script) + crypt_str(" script"), false);
 }
@@ -431,7 +418,6 @@ bool LabelClick2(const char* label, bool* v, const char* unique_id)
 	if (window->SkipItems)
 		return false;
 
-
 	char Buf[64];
 	_snprintf(Buf, 62, crypt_str("%s"), label);
 
@@ -480,71 +466,6 @@ bool LabelClick2(const char* label, bool* v, const char* unique_id)
 
 }
 
-void lua_edit(std::string window_name)
-{
-	std::string file_path = crypt_str("C:\\Oreo\\Scripts\\");
-	file_path += window_name + crypt_str(".lua");
-
-	const char* child_name = (window_name + window_name).c_str();
-
-	ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_FirstUseEver);
-	ImGui::Begin(window_name.c_str(), nullptr, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_MenuBar);
-	ImGui::PushStyleVar(ImGuiStyleVar_ScrollbarSize, 5.f);
-
-	static TextEditor editor;
-
-	if (!loaded_editing_script)
-	{
-		static auto lang = TextEditor::LanguageDefinition::Lua();
-
-		editor.SetLanguageDefinition(lang);
-		editor.SetReadOnly(false);
-
-		std::ifstream t(file_path);
-
-		if (t.good())
-		{
-			std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
-			editor.SetText(str);
-		}
-
-		loaded_editing_script = true;
-	}
-
-	ImGui::SetWindowFontScale(1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f));
-
-	ImGui::SetWindowSize(ImVec2(ImFloor(800 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))), ImFloor(700 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f)))));
-	editor.Render(child_name, ImGui::GetWindowSize() - ImVec2(0, 66 * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))));
-
-	ImGui::Separator();
-
-	ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ImGui::GetWindowSize().x - (16.f * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))) - (250.f * (1.f + ((c_menu::get().dpi_scale - 1.0) * 0.5f))));
-	ImGui::BeginGroup();
-
-	if (ImGui::Button(crypt_str("Save"), ImVec2(70, 20)))
-	{
-		std::ofstream out;
-
-		out.open(file_path);
-		out << editor.GetText() << std::endl;
-		out.close();
-	}
-
-	ImGui::SameLine();
-
-	if (ImGui::Button(crypt_str("Close"), ImVec2(70, 20)))
-	{
-		g_ctx.globals.focused_on_input = false;
-		loaded_editing_script = false;
-		editing_script.clear();
-	}
-
-	ImGui::EndGroup();
-
-	ImGui::PopStyleVar();
-	ImGui::End();
-}
-
 bool draw_lua_button(const char* label, const char* label_id, bool load, bool save, int curr_config, bool create = false)
 {
 	bool pressed = false;
@@ -559,12 +480,11 @@ bool draw_lua_button(const char* label, const char* label_id, bool load, bool sa
 	ImGui::PushStyleColor(ImGuiCol_PopupBg, ImVec4(33 / 255.f, 33 / 255.f, 33 / 255.f, g_ctx.gui.pop_anim * 0.85f));
 	if (ImGui::BeginPopup(label_id, ImGuiWindowFlags_NoMove))
 	{
-
 		ImGui::SetNextItemWidth(min(g_ctx.gui.pop_anim, 0.01f) * ImGui::GetFrameHeight() * 1.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_Alpha, g_ctx.gui.pop_anim);
 		auto clicked = false;
 		
-		bool one, ones, oness, two, open, edit = false;
+		bool one, ones, oness, two, open = false;
 		if (!create)
 		{
 			if (LabelClick2(crypt_str("Load"), &one, label_id))
@@ -575,24 +495,21 @@ bool draw_lua_button(const char* label, const char* label_id, bool load, bool sa
 
 			if (LabelClick2(crypt_str("Reload"), &ones, label_id))
 				Reload_scripts();
-
-			if (LabelClick2(crypt_str("Refresh"), &oness, label_id))
-				Refresh_scripts();
-
-			if (LabelClick2(crypt_str("Open lua folder"), &open, label_id))
-				Open_lua();
-
-//			if (LabelClick2(crypt_str("Edit"), &edit, label_id))
-//				edit2 = label;
 		}
+		else
+		{
+			ImGui::SetCursorPosX(8);
+			if (ImGui::CustomButton(crypt_str("Refresh"), crypt_str("##REFRESH_SCRIPTS"), ImVec2(193, 26 * 1)))
+				Refresh_scripts();
+			ImGui::SetCursorPosX(8);
+			if (ImGui::CustomButton(crypt_str("Open lua folder"), crypt_str("##OPEN_LUA"), ImVec2(193, 26 * 1)))
+				Open_lua();
+		}
+		ImGui::PopStyleVar();
 		ImGui::EndPopup();
 	}
 	ImGui::PopStyleVar(2);
 	ImGui::PopStyleColor(1);
-
-//	if (!edit2.empty()) {
-//		lua_edit(edit2.c_str());
-//	}
 
 	return pressed;
 }
@@ -675,7 +592,6 @@ void child_title(const char* label)
 
 void draw_combo(const char* name, int& variable, const char* labels[], int count)
 {
-
 	ImGui::SetCursorPosX(13);
 	ImGui::PushFont(c_menu::get().g_pMenuFont);
 	ImGui::Text(name);
@@ -731,10 +647,8 @@ void draw_multicombo(std::string name, std::vector<int>& variable, const char* l
 		ImGui::Spacing();
 		ImGui::BeginGroup();
 		{
-
 			for (auto i = 0; i < count; i++)
 				ImGui::Selectable(labels[i], (bool*)&variable[i], ImGuiSelectableFlags_DontClosePopups);
-
 		}
 		ImGui::EndGroup();
 		ImGui::Spacing();
@@ -1663,7 +1577,7 @@ void c_menu::misc()
 
 			if (g_cfg.misc.thirdperson_toggle.key > KEY_NONE && g_cfg.misc.thirdperson_toggle.key < KEY_MAX)
 			{
-				ImGui::SliderInt(crypt_str("Thirdperson distance"), &g_cfg.misc.thirdperson_distance, 150, 300);
+				ImGui::SliderInt(crypt_str("Thirdperson distance"), &g_cfg.misc.thirdperson_distance, 40, 300);
 				ImGui::SliderInt(crypt_str("Field of view"), &g_cfg.esp.fov, 0, 100);
 			}
 
@@ -1860,6 +1774,7 @@ void c_menu::main()
 			ImGui::BeginChild("##Lua", ImVec2(300, 570), false, ImGuiWindowFlags_NoBackground);
 			{
 				ImGui::PushFont(c_menu::get().g_pMenuFont);
+				draw_lua_button("Scripts", "#ddsdasdasdadsadasdawadsd", false, false, false, true);
 				for (int i = 0; i < scripts.size(); i++)
 				{
 					selected_script = i;

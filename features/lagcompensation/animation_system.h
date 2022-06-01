@@ -26,6 +26,8 @@ struct matrixes
 	matrix3x4_t zero[MAXSTUDIOBONES];
 	matrix3x4_t first[MAXSTUDIOBONES];
 	matrix3x4_t second[MAXSTUDIOBONES];
+	matrix3x4_t low_first[MAXSTUDIOBONES];
+	matrix3x4_t low_second[MAXSTUDIOBONES];
 };
 
 class adjust_data;
@@ -39,7 +41,8 @@ enum resolver_side
 	RESOLVER_LOW_FIRST,
 	RESOLVER_LOW_SECOND,
 	RESOLVER_LOW_FIRST1,
-	RESOLVER_LOW_SECOND1
+	RESOLVER_LOW_SECOND1,
+	RESOLVER_DEFAULT
 };
 
 enum modes
@@ -352,11 +355,12 @@ extern std::deque <adjust_data> player_records[65];
 struct player_settings
 {
 	__int64 id;
-	bool low_stand;
-	bool low_move;
+	resolver_history res_type;
 	bool faking;
 	int neg;
 	int pos;
+
+	player_settings(__int64 id, resolver_history res_type, bool faking, int left, int right) noexcept : id(id), res_type(res_type), faking(faking), neg(neg), pos(pos) { }
 };
 class lagcompensation : public singleton <lagcompensation>
 {
