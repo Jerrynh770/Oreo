@@ -315,7 +315,7 @@ void legit_bot::do_rcs(CUserCmd* cmd)
 	}
 
 
-	static auto recoil_scale = m_cvar()->FindVar("weapon_recoil_scale")->GetFloat();
+	static auto recoil_scale = m_cvar()->FindVar("weapon_recoil_scale")->GetFloat() / 2;
 	aim_punch = g_ctx.local()->m_aimPunchAngle() * recoil_scale;
 
 	aim_punch *= (g_cfg.legitbot.weapon[g_ctx.globals.current_weapon].rcs / 100.f);

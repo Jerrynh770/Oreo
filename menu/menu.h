@@ -101,9 +101,8 @@ private:
 	std::string preview = crypt_str("None");
 	
 	void rage();
-	void draw_visuals();
+	void legit();
 	void misc();
-	void draw_players();
 	void main();
 	void skins();
 	void sub_tabs();

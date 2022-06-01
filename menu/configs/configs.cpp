@@ -36,7 +36,7 @@ void C_ConfigManager::setup()
 
 	for (auto i = 0; i < 5; i++)
 	{
-		setup_item(&g_cfg.legitbot.weapon[i].priority, 0, std::to_string(i) + crypt_str("Legitbot.rcs"));
+		setup_item(&g_cfg.legitbot.weapon[i].priority, 0, std::to_string(i) + crypt_str("Legitbot.priority"));
 		setup_item(&g_cfg.legitbot.weapon[i].auto_stop, false, std::to_string(i) + crypt_str("Legitbot.auto_stop"));
 		setup_item(&g_cfg.legitbot.weapon[i].fov_type, 0, std::to_string(i) + crypt_str("Legitbot.fov_type"));
 		setup_item(&g_cfg.legitbot.weapon[i].fov, 0.0f, std::to_string(i) + crypt_str("Legitbot.fov"));

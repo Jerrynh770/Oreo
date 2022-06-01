@@ -8314,7 +8314,6 @@ bool ImGui::tab(const char* icon, const char* label, bool selected)
     return pressed;
 }
 
-
 ImGuiTabBar::ImGuiTabBar()
 {
     ID = 0;

@@ -14,7 +14,8 @@ std::vector <std::string> files;
 std::vector <std::string> scripts;
 std::string editing_script;
 
-auto s = ImVec2{}, p = ImVec2{}, gs = ImVec2{ 713, 763 };
+// 713, 763
+auto s = ImVec2{}, p = ImVec2{}, gs = ImVec2{ 713, 821 };
 
 auto selected_script = 0;
 auto loaded_editing_script = false;
@@ -26,6 +27,7 @@ int weapon;
 int tab;
 int category;
 int Rage_Tab;
+int Legit_Tab;
 int Visuals;
 int Misc;
 int Main;
@@ -1083,12 +1085,9 @@ void c_menu::rage()
 						ImGui::SliderInt(crypt_str("Body lean"), &g_cfg.antiaim.type[type].body_lean, 0, 100);
 						ImGui::SliderInt(crypt_str("Inverted body lean"), &g_cfg.antiaim.type[type].inverted_body_lean, 0, 100);
 					}
-
-					if (g_cfg.antiaim.type[type].desync == 1)
-					{
-						draw_keybind("Invert desync", &g_cfg.antiaim.flip_desync, "##HOTKEY_INVERT_DESYNC");
-					}
 				}
+
+				draw_keybind("Invert desync", &g_cfg.antiaim.flip_desync, "##HOTKEY_INVERT_DESYNC");
 
 				draw_keybind("Manual back", &g_cfg.antiaim.manual_back, "##HOTKEY_INVERT_BACK");
 
@@ -1113,6 +1112,88 @@ void c_menu::rage()
 			ImGui::Checkbox(crypt_str("Automatic stop"), &g_cfg.ragebot.weapon[hooks::rage_weapon].autostop);
 			if (g_cfg.ragebot.weapon[hooks::rage_weapon].autostop)
 				draw_multicombo(crypt_str("Modifiers"), g_cfg.ragebot.weapon[hooks::rage_weapon].autostop_modifiers, autostop_modifiers, ARRAYSIZE(autostop_modifiers), preview);
+		}
+		ImGui::EndChild();
+	}
+}
+
+void c_menu::legit()
+{
+	{
+		ImGui::PushFont(weapon_icons);
+		ImGui::SetCursorPos(ImVec2(40, 45));
+
+		ImGui::BeginGroup();
+		{
+			if (ImGui::weapon("G", hooks::legit_weapon == 0, 58, 1, 1))hooks::legit_weapon = 0; ImGui::SameLine();//pistol  
+			if (ImGui::weapon("S", hooks::legit_weapon == 2, 58, 1, 1))hooks::legit_weapon = 2; ImGui::SameLine();//rifle   
+			if (ImGui::weapon("L", hooks::legit_weapon == 3, 58, 1, 1))hooks::legit_weapon = 3; ImGui::SameLine();//smg  
+			if (ImGui::weapon("a", hooks::legit_weapon == 4, 58, 1, 1))hooks::legit_weapon = 4; ImGui::SameLine();//ssg
+			if (ImGui::weapon("d", hooks::legit_weapon == 5, 57, 1, 1))hooks::legit_weapon = 5; ImGui::SameLine();//heavy   
+		}
+		ImGui::EndGroup();
+		ImGui::PopFont();
+	}
+
+	if (Legit_Tab == 0)
+	{
+		ImGui::SetCursorPos(ImVec2(25, 130));
+		ImGui::MenuChild("Main", ImVec2(334, 570));
+		{
+			ImGui::Checkbox(crypt_str("Enable"), &g_cfg.legitbot.enabled);
+			ImGui::SameLine();
+			draw_keybind(crypt_str(""), &g_cfg.legitbot.key, crypt_str("##HOTKEY_LGBT_KEY"));
+			if (g_cfg.legitbot.enabled)
+				g_cfg.ragebot.enable = false;
+
+			ImGui::Checkbox(crypt_str("Friendly fire"), &g_cfg.legitbot.friendly_fire);
+			ImGui::Checkbox(crypt_str("Automatic pistols"), &g_cfg.legitbot.autopistol);
+
+			ImGui::Checkbox(crypt_str("Automatic scope"), &g_cfg.legitbot.autoscope);
+
+			if (g_cfg.legitbot.autoscope)
+				ImGui::Checkbox(crypt_str("Unscope after shot"), &g_cfg.legitbot.unscope);
+
+			ImGui::Checkbox(crypt_str("Snipers in zoom only"), &g_cfg.legitbot.sniper_in_zoom_only);
+
+			ImGui::Checkbox(crypt_str("Aim if in air"), &g_cfg.legitbot.do_if_local_in_air);
+			ImGui::Checkbox(crypt_str("Aim if flashed"), &g_cfg.legitbot.do_if_local_flashed);
+			ImGui::Checkbox(crypt_str("Aim thru smoke"), &g_cfg.legitbot.do_if_enemy_in_smoke);
+
+			draw_keybind(crypt_str("Automatic fire key"), &g_cfg.legitbot.autofire_key, crypt_str("##HOTKEY_AUTOFIRE_LGBT_KEY"));
+			ImGui::SliderInt(crypt_str("Automatic fire delay"), &g_cfg.legitbot.autofire_delay, 0, 12, false, (!g_cfg.legitbot.autofire_delay ? crypt_str("None") : (g_cfg.legitbot.autofire_delay == 1 ? crypt_str("%d tick") : crypt_str("%d ticks"))));
+
+			draw_combo(crypt_str("RCS type"), g_cfg.legitbot.weapon[hooks::legit_weapon].rcs_type, RCSType, ARRAYSIZE(RCSType));
+			ImGui::SliderFloat(crypt_str("RCS amount"), &g_cfg.legitbot.weapon[hooks::legit_weapon].rcs, 0.f, 100.f, crypt_str("%.0f%%"), 1.f);
+
+			if (g_cfg.legitbot.weapon[hooks::legit_weapon].rcs > 0)
+			{
+				ImGui::SliderFloat(crypt_str("RCS custom FOV"), &g_cfg.legitbot.weapon[hooks::legit_weapon].custom_rcs_fov, 0.f, 30.f, (!g_cfg.legitbot.weapon[hooks::legit_weapon].custom_rcs_fov ? crypt_str("None") : crypt_str("%.2f"))); //-V550
+				ImGui::SliderFloat(crypt_str("RCS Custom smooth"), &g_cfg.legitbot.weapon[hooks::legit_weapon].custom_rcs_smooth, 0.f, 12.f, (!g_cfg.legitbot.weapon[hooks::legit_weapon].custom_rcs_smooth ? crypt_str("None") : crypt_str("%.1f"))); //-V550
+			}
+		}
+		ImGui::EndChild();
+
+		ImGui::SetCursorPos(ImVec2(375, 130));
+		ImGui::MenuChild("Settings", ImVec2(316, 570));
+		{
+			const char* hitbox_legit[3] = { crypt_str("Closest"), crypt_str("Head"), crypt_str("Body") };
+			draw_combo(crypt_str("Hitbox"), g_cfg.legitbot.weapon[hooks::legit_weapon].priority, hitbox_legit, ARRAYSIZE(hitbox_legit));
+			ImGui::SliderFloat(crypt_str("Maximum FOV amount"), &g_cfg.legitbot.weapon[hooks::legit_weapon].fov, 0.f, 30.f, crypt_str("%.2f"));
+			ImGui::Spacing();
+			ImGui::SliderFloat(crypt_str("Silent FOV"), &g_cfg.legitbot.weapon[hooks::legit_weapon].silent_fov, 0.f, 30.f, (!g_cfg.legitbot.weapon[hooks::legit_weapon].silent_fov ? crypt_str("None") : crypt_str("%.2f"))); //-V550
+
+			ImGui::Spacing();
+
+			draw_combo(crypt_str("Smooth type"), g_cfg.legitbot.weapon[hooks::legit_weapon].smooth_type, LegitSmooth, ARRAYSIZE(LegitSmooth));
+			ImGui::SliderFloat(crypt_str("Smooth amount"), &g_cfg.legitbot.weapon[hooks::legit_weapon].smooth, 1.f, 12.f, crypt_str("%.1f"));
+
+			ImGui::Spacing();
+
+			ImGui::SliderInt(crypt_str("Automatic wall damage"), &g_cfg.legitbot.weapon[hooks::legit_weapon].awall_dmg, 0, 100, false, (!g_cfg.legitbot.weapon[hooks::legit_weapon].awall_dmg ? crypt_str("None") : crypt_str("%d")));
+			ImGui::SliderInt(crypt_str("Automatic fire hitchance"), &g_cfg.legitbot.weapon[hooks::legit_weapon].autofire_hitchance, 0, 100, false, (!g_cfg.legitbot.weapon[hooks::legit_weapon].autofire_hitchance ? crypt_str("None") : crypt_str("%d")));
+			ImGui::SliderFloat(crypt_str("Target switch delay"), &g_cfg.legitbot.weapon[hooks::legit_weapon].target_switch_delay, 0.f, 1.f);
+			ImGui::Checkbox(crypt_str("Automatic stop"), &g_cfg.legitbot.weapon[hooks::legit_weapon].auto_stop);
 		}
 		ImGui::EndChild();
 	}
@@ -2196,6 +2277,12 @@ void c_menu::sub_tabs()
 
 	if (tab == 1)
 	{
+		ImGui::SetCursorPos(ImVec2{ 407 , 45 });
+		if (ImGui::tab(" General", "", !Legit_Tab)) Legit_Tab = 0;
+	}
+
+	if (tab == 2)
+	{
 		ImGui::SetCursorPos(ImVec2{ 57 , 45 });
 		if (ImGui::tab(" General", "", !Visuals)) Visuals = 0;
 
@@ -2209,7 +2296,7 @@ void c_menu::sub_tabs()
 		if (ImGui::tab("    Style", "   ", Visuals == 3)) Visuals = 3;
 	}
 
-	if (tab == 2)
+	if (tab == 3)
 	{
 		ImGui::SetCursorPos(ImVec2{ 407 , 45 });
 		if (ImGui::tab(" General", "", !Misc)) Misc = 0;
@@ -2218,7 +2305,7 @@ void c_menu::sub_tabs()
 		if (ImGui::tab("   Other", " ", Misc == 1)) Misc = 1;
 	}
 
-	if (tab == 3)
+	if (tab == 4)
 	{
 		ImGui::SetCursorPos(ImVec2{ 407 , 45 });
 		if (ImGui::tab("  Config ", "", !Main)) Main = 0;
@@ -2230,7 +2317,7 @@ void c_menu::sub_tabs()
 		if (ImGui::tab("  Debug", "  ", Main == 2)) Main = 2;
 	}
 
-	if (tab == 4)
+	if (tab == 5)
 	{
 		ImGui::SetCursorPos(ImVec2{ 407 , 45 });
 		if (ImGui::tab("    Skins", "", !Skins)) Skins = 0;
@@ -2246,28 +2333,32 @@ void c_menu::tabs()
 	ImGui::SetCursorPos(ImVec2{ 10 , 725 });
 	if (ImGui::tab("      RAGE", "A", !tab)) tab = 0;
 
-	// 110 + 10
 	ImGui::SetCursorPos(ImVec2{ 120 , 725 });
-	if (ImGui::tab("    VISUAL", "K", tab == 1)) tab = 1;
+	if (ImGui::tab("     LEGIT", "B", tab == 1)) tab = 1;
+
+	// 110 + 10
+	ImGui::SetCursorPos(ImVec2{ 230 , 725 });
+	if (ImGui::tab("    VISUAL", "K", tab == 2)) tab = 2;
 
 	// 110 + 110 + 10
-	ImGui::SetCursorPos(ImVec2{ 230 , 725 });
-	if (ImGui::tab("      MISC", "I", tab == 2)) tab = 2;
+	ImGui::SetCursorPos(ImVec2{ 340 , 725 });
+	if (ImGui::tab("      MISC", "I", tab == 3)) tab = 3;
 
 	// 110 + 110 + 110 + 10
-	ImGui::SetCursorPos(ImVec2{ 340 , 725 });
-	if (ImGui::tab("      MAIN", "O", tab == 3)) tab = 3;
-
 	ImGui::SetCursorPos(ImVec2{ 450 , 725 });
-	if (ImGui::tab("	    SKINS", "C", tab == 4)) tab = 4;
+	if (ImGui::tab("      MAIN", "O", tab == 4)) tab = 4;
+
+	ImGui::SetCursorPos(ImVec2{ 560 , 725 });
+	if (ImGui::tab("	    SKINS", "C", tab == 5)) tab = 5;
 
 	switch (tab)
 	{
 		case 0: rage(); break;
-		case 1: visuals(); break;
-		case 2: misc(); break;
-		case 3: main(); break;
-		case 4: skins(); break;
+		case 1: legit(); break;
+		case 2: visuals(); break;
+		case 3: misc(); break;
+		case 4: main(); break;
+		case 5: skins(); break;
 	}
 }
 

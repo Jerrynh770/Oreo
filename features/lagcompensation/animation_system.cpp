@@ -9,9 +9,6 @@ void lagcompensation::fsn(ClientFrameStage_t stage)
 	if (stage != FRAME_NET_UPDATE_END)
 		return;
 
-	if (!g_cfg.ragebot.enable)
-		return;
-
 	for (auto i = 1; i < m_globals()->m_maxclients; i++) //-V807
 	{
 		auto e = static_cast<player_t*>(m_entitylist()->GetClientEntity(i));
@@ -146,7 +143,7 @@ void lagcompensation::extrapolate(player_t* player, Vector& origin, Vector& velo
 
 bool lagcompensation::valid(int i, player_t* e)
 {
-	if (!g_cfg.ragebot.enable || !e->valid(false))
+	if (!e->valid(false))
 	{
 		if (!e->is_alive())
 		{
