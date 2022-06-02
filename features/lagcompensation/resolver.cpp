@@ -19,6 +19,14 @@ Vector player_t::get_eye_pos() {
     return m_vecOrigin() + m_vecViewOffset();
 }
 
+float GetBackwardYaw(player_t* ent) {
+    return math::calculate_angle(g_ctx.local()->GetAbsOrigin(), ent->GetAbsOrigin()).y;
+}
+
+float GetForwardYaw(player_t* ent) {
+    return math::normalize_yaw(GetBackwardYaw(ent) - 180.f);
+}
+
 float ApproachAngle(float target, float value, float speed)
 {
     target = flAngleMod(target);
@@ -98,9 +106,9 @@ bool resolver::Side()
 
     if (speed > 1.1f)
     {
-        if (!layers[12].m_flWeight * 1800.f)
+        if (!layers[11].m_flWeight * 1800.f)
         {
-            if ((layers[6].m_flWeight * 1800.f) == (layers[6].m_flWeight * 1800.f))
+            if ((layers[4].m_flWeight * 1800.f) == (layers[4].m_flWeight * 1800.f))
             {
                 float EyeYaw = fabs(layers[6].m_flPlaybackRate - moveLayers[0][6].m_flPlaybackRate);
                 float Negative = fabs(layers[6].m_flPlaybackRate - moveLayers[1][6].m_flPlaybackRate);
@@ -352,9 +360,9 @@ void resolver::resolve_yaw()
         const float s_delta = abs(player_record->layers[6].m_flPlaybackRate - player_record->center_layers[6].m_flPlaybackRate);
         const float t_delta = abs(player_record->layers[6].m_flPlaybackRate - player_record->right_layers[6].m_flPlaybackRate);
 
-        if (f_delta < s_delta || t_delta <= s_delta || (s_delta * 1000.0))
+        if (f_delta < s_delta || t_delta <= s_delta || (s_delta * 1800.0))
         {
-            if (f_delta >= t_delta && s_delta > t_delta && !(t_delta * 1000.0))
+            if (f_delta >= t_delta && s_delta > t_delta && !(t_delta * 1800.0))
             {
                 side[player->EntIndex()] = 1;
             }
@@ -364,6 +372,9 @@ void resolver::resolve_yaw()
             side[player->EntIndex()] = -1;
         }
     }
+
+    if (player->GetAbsOrigin().y == GetForwardYaw(player))
+        side[player->EntIndex()] *= -1;
 
     if (resolveValue > player->get_max_desync_delta())
         resolveValue = player->get_max_desync_delta();

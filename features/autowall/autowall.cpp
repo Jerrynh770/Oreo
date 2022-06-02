@@ -57,7 +57,7 @@ void autowall::scale_damage(player_t* e, CGameTrace& enterTrace, weapon_info_t* 
 		currentDamage *= flHeadShotMultiplier * head_scale;
 		break;
 	case HITGROUP_STOMACH:
-		currentDamage *= 1.25f * body_scale;
+		currentDamage *= 1.15f * body_scale;
 		break;
 	case HITGROUP_CHEST:
 	case HITGROUP_LEFTARM:
@@ -67,7 +67,7 @@ void autowall::scale_damage(player_t* e, CGameTrace& enterTrace, weapon_info_t* 
 		break;
 	case HITGROUP_LEFTLEG:
 	case HITGROUP_RIGHTLEG:
-		currentDamage *= 0.75f * body_scale;
+		currentDamage *= 0.85f * body_scale;
 		break;
 	}
 
@@ -453,7 +453,7 @@ autowall::returninfo_t autowall::wall_penetration(const Vector& eye_pos, Vector&
 	if (fire_bullet(weapon, direction, visible, damage, hitbox, e, 0.0f, eye_pos))
 	{
 		g_ctx.globals.autowalling = false;
-		return returninfo_t(visible, (int)damage, hitbox); //-V2003
+		return returninfo_t(visible, (int)damage, hitbox);
 	}
 	else
 	{

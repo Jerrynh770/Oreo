@@ -365,7 +365,7 @@ namespace util
 		if (i < 1 || i > 64)
 			return false;
 
-		auto records = &player_records[i]; //-V826
+		auto records = &player_records[i];
 
 		if (records->size() < 2)
 			return false;
@@ -379,7 +379,7 @@ namespace util
 				return false;
 
 			auto curtime = m_globals()->m_curtime;
-			auto range = 0.2f;
+			auto range = 0.4f;
 
 			if (g_ctx.local()->is_alive())
 				curtime = TICKS_TO_TIME(g_ctx.globals.fixed_tickbase);

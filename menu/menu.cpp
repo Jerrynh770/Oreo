@@ -14,8 +14,7 @@ std::vector <std::string> files;
 std::vector <std::string> scripts;
 std::string editing_script;
 
-// 713, 763
-auto s = ImVec2{}, p = ImVec2{}, gs = ImVec2{ 713, 821 };
+auto s = ImVec2{}, p = ImVec2{}, gs = ImVec2{ 713, 763 };
 
 auto selected_script = 0;
 auto loaded_editing_script = false;
@@ -1608,6 +1607,18 @@ void c_menu::visuals()
 		}
 		ImGui::EndChild();
 	}
+
+	if (Visuals == 3)
+	{
+		ImGui::SetCursorPos(ImVec2(25, 130));
+		ImGui::MenuChild("Info", ImVec2(334, 570));
+		{
+			ImGui::SetCursorPos(ImVec2(12, 10));
+			if (ImGui::Button(crypt_str("Discord"), ImVec2(310, 30)))
+				ShellExecute(0, 0, "https://discord.gg/9EyzbcJNqV", 0, 0, SW_SHOW);
+		}
+		ImGui::EndChild();
+	}
 }
 
 void c_menu::misc()
@@ -2293,7 +2304,7 @@ void c_menu::sub_tabs()
 		if (ImGui::tab("   Other", "  ", Visuals == 2)) Visuals = 2;
 
 		ImGui::SetCursorPos(ImVec2{554 , 45});
-		if (ImGui::tab("    Style", "   ", Visuals == 3)) Visuals = 3;
+		if (ImGui::tab("    Info", "   ", Visuals == 3)) Visuals = 3;
 	}
 
 	if (tab == 3)
