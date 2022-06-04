@@ -379,7 +379,7 @@ namespace util
 				return false;
 
 			auto curtime = m_globals()->m_curtime;
-			auto range = 0.4f;
+			auto range = 0.2f;
 
 			if (g_ctx.local()->is_alive())
 				curtime = TICKS_TO_TIME(g_ctx.globals.fixed_tickbase);

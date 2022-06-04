@@ -9,7 +9,7 @@ void lagcompensation::fsn(ClientFrameStage_t stage)
 	if (stage != FRAME_NET_UPDATE_END)
 		return;
 
-	for (auto i = 1; i < m_globals()->m_maxclients; i++) //-V807
+	for (auto i = 1; i < m_globals()->m_maxclients; i++)
 	{
 		auto e = static_cast<player_t*>(m_entitylist()->GetClientEntity(i));
 
@@ -24,7 +24,7 @@ void lagcompensation::fsn(ClientFrameStage_t stage)
 		if (time_delta > 1.0f / m_globals()->m_intervalpertick)
 			continue;
 
-		auto update = player_records[i].empty() || e->m_flSimulationTime() != e->m_flOldSimulationTime(); //-V550
+		auto update = player_records[i].empty() || e->m_flSimulationTime() != e->m_flOldSimulationTime();
 
 		if (update && !player_records[i].empty())
 		{
@@ -36,7 +36,7 @@ void lagcompensation::fsn(ClientFrameStage_t stage)
 				auto layer = &e->get_animlayers()[11];
 				auto previous_layer = &player_records[i].front().layers[11];
 
-				if (layer->m_flCycle == previous_layer->m_flCycle) //-V550
+				if (layer->m_flCycle == previous_layer->m_flCycle)
 				{
 					e->m_flSimulationTime() = e->m_flOldSimulationTime();
 					update = false;
@@ -44,7 +44,7 @@ void lagcompensation::fsn(ClientFrameStage_t stage)
 			}
 		}
 
-		if (update) //-V550
+		if (update)
 		{
 			if (!player_records[i].empty() && (e->m_vecOrigin() - player_records[i].front().origin).LengthSqr() > 4096.0f)
 				for (auto& record : player_records[i])
@@ -201,7 +201,7 @@ void lagcompensation::update_player_animations(player_t* e)
 	auto backup_flags = e->m_fFlags();
 	auto backup_eflags = e->m_iEFlags();
 
-	auto backup_curtime = m_globals()->m_curtime; //-V807
+	auto backup_curtime = m_globals()->m_curtime;
 	auto backup_frametime = m_globals()->m_frametime;
 	auto backup_realtime = m_globals()->m_realtime;
 	auto backup_framecount = m_globals()->m_framecount;
@@ -388,6 +388,7 @@ void lagcompensation::update_player_animations(player_t* e)
 
 				g_ctx.globals.updating_animation = true;
 				e->update_clientside_animation();
+				upd_nw(e);
 				g_ctx.globals.updating_animation = false;
 
 				m_globals()->m_realtime = backup_realtime;
@@ -402,11 +403,7 @@ void lagcompensation::update_player_animations(player_t* e)
 	}
 
 	if (!updated_animations)
-	{
-		g_ctx.globals.updating_animation = true;
-		e->update_clientside_animation();
-		g_ctx.globals.updating_animation = false;
-	}
+		upd_nw(e);
 
 	memcpy(animstate, &state, sizeof(c_baseplayeranimationstate));
 
@@ -442,36 +439,28 @@ void lagcompensation::update_player_animations(player_t* e)
 	{
 		animstate->m_flGoalFeetYaw = previous_goal_feet_yaw[e->EntIndex()]; //-V807
 
-		g_ctx.globals.updating_animation = true;
-		e->update_clientside_animation();
-		g_ctx.globals.updating_animation = false;
+		upd_nw(e);
 
 		previous_goal_feet_yaw[e->EntIndex()] = animstate->m_flGoalFeetYaw;
 		memcpy(animstate, &state, sizeof(c_baseplayeranimationstate));
 
 		animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y); //-V807
 
-		g_ctx.globals.updating_animation = true;
-		e->update_clientside_animation();
-		g_ctx.globals.updating_animation = false;
+		upd_nw(e);
 
 		setup_matrix(e, record->center_layers, NONE);
 		memcpy(animstate, &state, sizeof(c_baseplayeranimationstate));
 
 		animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y + 60.0f);
 
-		g_ctx.globals.updating_animation = true;
-		e->update_clientside_animation();
-		g_ctx.globals.updating_animation = false;
+		upd_nw(e);
 
 		setup_matrix(e, record->left_layers, FIRST);
 		memcpy(animstate, &state, sizeof(c_baseplayeranimationstate));
 
 		animstate->m_flGoalFeetYaw = math::normalize_yaw(e->m_angEyeAngles().y - 60.0f);
 
-		g_ctx.globals.updating_animation = true;
-		e->update_clientside_animation();
-		g_ctx.globals.updating_animation = false;
+		upd_nw(e);
 
 		setup_matrix(e, record->right_layers, SECOND);
 		memcpy(animstate, &state, sizeof(c_baseplayeranimationstate));
@@ -509,9 +498,7 @@ void lagcompensation::update_player_animations(player_t* e)
 		}
 	}
 
-	g_ctx.globals.updating_animation = true;
-	e->update_clientside_animation();
-	g_ctx.globals.updating_animation = false;
+	upd_nw(e);
 
 	setup_matrix(e, animlayers, MAIN);
 	memcpy(e->m_CachedBoneData().Base(), record->matrixes_data.main, e->m_CachedBoneData().Count() * sizeof(matrix3x4_t));
@@ -536,7 +523,7 @@ bool lagcompensation::is_unsafe_tick(player_t* player)
 	auto records = &player_records[player->EntIndex()];
 
 	if (records->empty())
-		return true; //no records, then skip.
+		return true;
 
 	adjust_data* previous_record = nullptr;
 

@@ -1614,8 +1614,8 @@ void c_menu::visuals()
 		ImGui::MenuChild("Info", ImVec2(334, 570));
 		{
 			ImGui::SetCursorPos(ImVec2(12, 10));
-			if (ImGui::Button(crypt_str("Discord"), ImVec2(310, 30)))
-				ShellExecute(0, 0, "https://discord.gg/9EyzbcJNqV", 0, 0, SW_SHOW);
+			if (ImGui::Button(crypt_str("Site"), ImVec2(310, 30)))
+				ShellExecute(0, 0, "https://oukilove.github.io/OreoSite/", 0, 0, SW_SHOW);
 		}
 		ImGui::EndChild();
 	}
